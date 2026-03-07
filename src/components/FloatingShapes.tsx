@@ -7,7 +7,7 @@ const shapes = [
 ];
 
 function ShapeSVG({ type, size }: { type: string; size: number }) {
-  const stroke = "rgba(255,255,255,0.10)";
+  const stroke = "rgba(255,255,255,0.18)";
   if (type === "triangle") {
     const h = size * 0.866;
     return (
@@ -16,7 +16,7 @@ function ShapeSVG({ type, size }: { type: string; size: number }) {
           points={`${size / 2},0 ${size},${h} 0,${h}`}
           fill="none"
           stroke={stroke}
-          strokeWidth="0.5"
+          strokeWidth="1"
         />
       </svg>
     );
@@ -29,14 +29,14 @@ function ShapeSVG({ type, size }: { type: string; size: number }) {
     }).join(" ");
     return (
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <polygon points={pts} fill="none" stroke={stroke} strokeWidth="0.5" />
+        <polygon points={pts} fill="none" stroke={stroke} strokeWidth="1" />
       </svg>
     );
   }
   // square
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <rect x="0.5" y="0.5" width={size - 1} height={size - 1} fill="none" stroke={stroke} strokeWidth="0.5" />
+      <rect x="0.5" y="0.5" width={size - 1} height={size - 1} fill="none" stroke={stroke} strokeWidth="1" />
     </svg>
   );
 }

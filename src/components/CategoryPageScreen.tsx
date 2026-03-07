@@ -111,14 +111,14 @@ export default function CategoryPageScreen({
       )}
 
       {/* Centered content */}
-      <div className="flex-1 flex items-center justify-center px-6 md:px-8 py-20">
+      <div className="flex-1 flex items-center justify-center px-8 md:px-10 py-16">
         <div className="w-full" style={{ maxWidth: "600px" }}>
           {/* Category header */}
           <div className="mb-10 overflow-hidden">
             <div className="flex items-center justify-between mb-2 gap-2">
               <h2
                 className={`mono ${gradientClass[categoryId]}`}
-                style={{ fontSize: 24, fontWeight: 300, letterSpacing: "0.2em" }}
+                style={{ fontSize: "clamp(18px, 4vw, 24px)", fontWeight: 300, letterSpacing: "0.15em" }}
               >
                 {category.label}
               </h2>
@@ -179,7 +179,7 @@ export default function CategoryPageScreen({
                     </div>
 
                     {/* Radio buttons — 32px, gap-1 for mobile fit */}
-                    <div className="flex justify-end gap-1 sm:gap-2">
+                    <div className="flex justify-center gap-1 sm:gap-2">
                       {[1, 2, 3, 4, 5, 6, 7].map((value) => {
                         const selected = localAnswers[q.id] === value;
                         const btnKey = `${q.id}-${value}`;
@@ -207,7 +207,7 @@ export default function CategoryPageScreen({
                     </div>
 
                     {idx === 0 && (
-                      <div className="flex justify-end mt-1">
+                      <div className="flex justify-center mt-1">
                         <div className="flex w-[248px]">
                           <span style={{ fontSize: 9, color: "#5A5A5A", letterSpacing: "0.05em" }}>いいえ</span>
                           <span className="flex-1" />
