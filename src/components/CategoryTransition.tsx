@@ -75,7 +75,7 @@ export default function CategoryTransition({
         className="text-center transition-opacity duration-500 ease-out"
         style={{ opacity: visible ? 1 : 0 }}
       >
-        <p className="text-lg md:text-xl font-light text-white/80 tracking-wide leading-relaxed">
+        <p className={`text-lg md:text-xl font-light text-white/80 tracking-wide leading-relaxed ${visible ? "animate-glitch-in" : ""}`}>
           {message}
         </p>
 

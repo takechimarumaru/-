@@ -18,12 +18,17 @@ export default function ResultScreen({
 }: ResultScreenProps) {
   const [displaySeconds, setDisplaySeconds] = useState(0);
   const [isReducing, setIsReducing] = useState(false);
-  const [showYMD, setShowYMD] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [enterVisible, setEnterVisible] = useState(false);
-  const [stepLabel, setStepLabel] = useState("");
-  const [stepMessage, setStepMessage] = useState("");
   const [entering, setEntering] = useState(true);
+
+  // Step info text
+  const [topLabel, setTopLabel] = useState("");
+  const [bottomLabel, setBottomLabel] = useState("");
+  // Track which step we're on for the summary highlight
+  const [currentStep, setCurrentStep] = useState(0);
+  // Show summary rows after STEP 3 complete
+  const [showSummary, setShowSummary] = useState(false);
 
   const displayRef = useRef(0);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -82,58 +87,72 @@ export default function ResultScreen({
     return id;
   }, []);
 
-  // Single imperative orchestration — no dependency on stage state
-  useEffect(() => {
-    const remainingSec = Math.round(result.remainingSeconds);
-    const awakeSec = Math.round(result.awakeSeconds);
-    const healthySec = Math.round(result.healthySeconds);
+  // Derived values for summary
+  const remainingSec = Math.round(result.remainingSeconds);
+  const awakeSec = Math.round(result.awakeSeconds);
+  const healthySec = Math.round(result.healthySeconds);
 
+  const awakeRatio = (24 - result.sleepHours) / 24;
+  const awakeLifespan = info.age + result.remainingYears * awakeRatio;
+  const healthyLifespan =
+    info.gender === "male" ? 72 :
+    info.gender === "female" ? 75 :
+    73.5;
+
+  const summaryRows = [
+    { label: "推定寿命", age: result.estimatedLifespan, seconds: remainingSec, step: 1 },
+    { label: "睡眠除外後", age: awakeLifespan, seconds: awakeSec, step: 2 },
+    { label: "健康寿命ベース", age: healthyLifespan, seconds: healthySec, step: 3 },
+  ];
+
+  // Single imperative orchestration
+  useEffect(() => {
     // 1s dark → show counter with step1
     addTimer(() => {
       setEntering(false);
       setEnterVisible(true);
       setDisplaySeconds(remainingSec);
       displayRef.current = remainingSec;
+      setCurrentStep(1);
+      setTopLabel(`推定寿命: ${result.estimatedLifespan.toFixed(1)}歳`);
       startCountdown();
 
       // After 5s → STEP 2: sleep reduction
       addTimer(() => {
         stopCountdown();
         setIsReducing(true);
+        setCurrentStep(2);
+        setTopLabel(`睡眠時間 ${result.sleepHours.toFixed(1)}時間/日 を除外`);
+        setBottomLabel("");
 
         animateToValue(awakeSec, 3000, () => {
           setIsReducing(false);
-          setStepMessage(
-            `あなたは毎日${result.sleepHours.toFixed(1)}時間眠っている。起きている時間だけが、あなたの時間。`
-          );
-          setStepLabel("起きている時間のみ");
+          setBottomLabel("起きている時間のみ");
           startCountdown();
 
           // After 5s → STEP 3: healthy lifespan reduction
           addTimer(() => {
             stopCountdown();
-            setStepMessage("");
             setIsReducing(true);
+            setCurrentStep(3);
+            setTopLabel("健康寿命ベースに切替");
+            setBottomLabel("");
 
             animateToValue(healthySec, 3000, () => {
               setIsReducing(false);
-              setStepMessage("健康に動ける時間は、さらに短い。");
-              setStepLabel("健康寿命ベース × 起きている時間");
+              setBottomLabel("健康寿命 × 起きている時間");
               startCountdown();
 
-              // After 3s → convert to YMD
+              // After 3s → show summary
               addTimer(() => {
-                setStepMessage("");
+                setTopLabel("");
+                setBottomLabel("");
+                setShowSummary(true);
 
-                // 3s pause then switch
+                // 8s silence then show actions
                 addTimer(() => {
-                  setShowYMD(true);
-
-                  // 8s silence then show actions
-                  addTimer(() => {
-                    setShowActions(true);
-                  }, 8000);
-                }, 3000);
+                  setShowActions(true);
+                }, 8000);
               }, 3000);
             });
           }, 5000);
@@ -164,49 +183,74 @@ export default function ResultScreen({
       >
         <div className="min-h-screen flex flex-col items-center justify-center px-6">
           <div className="text-center">
-            {/* Year/Month/Day display */}
-            {showYMD && (
-              <div className="mb-8 animate-fade-in">
-                <p className="font-light tracking-wide text-white" style={{ fontSize: "clamp(36px, 8vw, 80px)", lineHeight: 1.3 }}>
-                  残り{" "}
-                  <span className="mono tabular-nums font-bold">{ymd.years}</span>年{" "}
-                  <span className="mono tabular-nums font-bold">{ymd.months}</span>ヶ月{" "}
-                  <span className="mono tabular-nums font-bold">{ymd.days}</span>日
+            {/* Top label — reason text */}
+            <div className="h-8 flex items-center justify-center mb-4">
+              {topLabel && (
+                <p key={topLabel} className="text-sm font-light text-text-secondary animate-fade-in tracking-wide">
+                  {topLabel}
                 </p>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Seconds counter */}
-            <div className="mb-3">
+            {/* Main seconds counter — largest element */}
+            <div className="mb-2">
               <span
-                className="mono tabular-nums tracking-wider transition-all duration-500"
+                className="mono tabular-nums tracking-wider transition-colors duration-500 block"
                 style={{
-                  fontSize: showYMD ? "22px" : "clamp(48px, 12vw, 84px)",
-                  fontWeight: showYMD ? 400 : 200,
+                  fontSize: "clamp(64px, 15vw, 120px)",
+                  fontWeight: 200,
                   lineHeight: 1.1,
                   color: isReducing ? "#FF3333" : "#FFFFFF",
                 }}
               >
                 {formatSeconds(displaySeconds)}
               </span>
-              {!showYMD && (
-                <span className="label ml-3">SECONDS</span>
+            </div>
+
+            {/* SECONDS label */}
+            <p className="label mb-3">SECONDS</p>
+
+            {/* Supplementary YMD */}
+            <p className="text-white/60 text-2xl font-light tracking-wide mb-4" style={{ fontSize: "clamp(16px, 3vw, 24px)" }}>
+              残り{" "}
+              <span className="mono tabular-nums">{ymd.years}</span>年{" "}
+              <span className="mono tabular-nums">{ymd.months}</span>ヶ月{" "}
+              <span className="mono tabular-nums">{ymd.days}</span>日
+            </p>
+
+            {/* Bottom label */}
+            <div className="h-8 flex items-center justify-center">
+              {bottomLabel && (
+                <p key={bottomLabel} className="label animate-fade-in">{bottomLabel}</p>
               )}
             </div>
 
-            {/* Step label */}
-            {stepLabel && (
-              <p className="label mb-4 animate-fade-in">{stepLabel}</p>
+            {/* Summary rows — after STEP 3 */}
+            {showSummary && (
+              <div className="mt-10 animate-fade-in">
+                <div className="inline-block text-left">
+                  {summaryRows.map((row) => {
+                    const rowYmd = secondsToYMD(row.seconds);
+                    const isActive = row.step === currentStep;
+                    return (
+                      <div
+                        key={row.step}
+                        className="flex items-baseline gap-4 mb-1.5"
+                        style={{
+                          color: isActive ? "#FFFFFF" : "#666666",
+                          fontSize: "12px",
+                        }}
+                      >
+                        <span className="mono w-28 shrink-0">{row.label}</span>
+                        <span className="mono tabular-nums">{row.age.toFixed(1)}歳</span>
+                        <span className="mx-1">残り</span>
+                        <span className="mono tabular-nums">{secondsToYMD(row.seconds).years}年{secondsToYMD(row.seconds).months}ヶ月{secondsToYMD(row.seconds).days}日</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
-
-            {/* Step messages */}
-            <div className="h-16 flex items-center justify-center">
-              {stepMessage && (
-                <p key={stepMessage} className="text-sm font-light text-text-secondary animate-fade-in max-w-sm leading-relaxed">
-                  {stepMessage}
-                </p>
-              )}
-            </div>
           </div>
         </div>
 
@@ -221,7 +265,7 @@ export default function ResultScreen({
                 className="text-xs text-text-secondary tracking-wider mono
                            hover:text-white transition-colors duration-200"
               >
-                もう一度やり直す
+                もう一度測定する
               </button>
 
               <p className="text-[10px] text-text-secondary/40 text-center leading-relaxed mt-6">
