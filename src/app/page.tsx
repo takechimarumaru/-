@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { ScreenId, BasicInfo, Answers, CategoryId, CalculationResult } from "@/types";
+import { BasicInfo, Answers, CategoryId, CalculationResult } from "@/types";
 import { questions, categories } from "@/lib/questions";
 import { calculate } from "@/lib/calculator";
 import IntroScreen from "@/components/IntroScreen";
@@ -23,7 +23,6 @@ export default function Home() {
   const [basicInfo, setBasicInfo] = useState<BasicInfo | null>(null);
   const [answers, setAnswers] = useState<Answers>({});
 
-  // Group questions by category in order
   const questionsByCategory = useMemo(() => {
     const grouped: { categoryId: CategoryId; questions: typeof questions }[] = [];
     for (const cat of categories) {
@@ -47,7 +46,6 @@ export default function Home() {
   const handleBasicInfo = useCallback(
     (age: number, gender: BasicInfo["gender"]) => {
       setBasicInfo({ age, gender });
-      // Start with first category transition
       setFlow({ screen: "categoryTransition", categoryId: questionsByCategory[0].categoryId });
     },
     [questionsByCategory]
@@ -55,7 +53,6 @@ export default function Home() {
 
   const handleCategoryTransitionComplete = useCallback(
     (categoryId: CategoryId) => {
-      // Find first question of this category
       const idx = allQuestionsFlat.findIndex((q) => q.category === categoryId);
       setFlow({ screen: "question", questionIndex: idx });
     },
@@ -70,7 +67,6 @@ export default function Home() {
       const nextIndex = questionIndex + 1;
 
       if (nextIndex >= allQuestionsFlat.length) {
-        // All done — go to result
         setFlow({ screen: "resultTransition" });
         setTimeout(() => setFlow({ screen: "result" }), 500);
         return;
@@ -78,7 +74,6 @@ export default function Home() {
 
       const nextQuestion = allQuestionsFlat[nextIndex];
       if (nextQuestion.category !== question.category) {
-        // Category change — show transition
         setFlow({
           screen: "categoryTransition",
           categoryId: nextQuestion.category,
@@ -96,13 +91,11 @@ export default function Home() {
     setAnswers({});
   }, []);
 
-  // Calculate result
   const result: CalculationResult | null = useMemo(() => {
     if (flow.screen !== "result" || !basicInfo) return null;
     return calculate(basicInfo, answers);
   }, [flow.screen, basicInfo, answers]);
 
-  // Get category-level question index
   const getCategoryQuestionInfo = (globalIndex: number) => {
     const question = allQuestionsFlat[globalIndex];
     const catQuestions = allQuestionsFlat.filter(
@@ -140,12 +133,14 @@ export default function Home() {
           totalInCategory={
             getCategoryQuestionInfo(flow.questionIndex).totalInCategory
           }
+          globalIndex={flow.questionIndex}
+          totalQuestions={allQuestionsFlat.length}
           onAnswer={(value) => handleAnswer(flow.questionIndex, value)}
         />
       )}
 
       {flow.screen === "resultTransition" && (
-        <div className="min-h-screen bg-[#2D2A26] animate-fade-in" />
+        <div className="min-h-screen bg-bg-base animate-fade-in" />
       )}
 
       {flow.screen === "result" && result && basicInfo && (

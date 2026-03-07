@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
-import { CalculationResult, BasicInfo, CategoryId } from "@/types";
-import { animateValue, secondsToYMD, formatSeconds } from "@/lib/animations";
-import CategoryBar from "./CategoryBar";
-import AdviceCard from "./AdviceCard";
+import { useEffect, useState, useRef } from "react";
+import { CalculationResult, BasicInfo } from "@/types";
+import { animateValue, formatSeconds } from "@/lib/animations";
 import ShareButton from "./ShareButton";
 
 interface ResultScreenProps {
@@ -13,36 +11,15 @@ interface ResultScreenProps {
   onRestart: () => void;
 }
 
-type Stage = "entering" | "step1" | "step2-counting" | "step2-text" | "step3-counting" | "step3-text" | "silence" | "final";
-
-// Hourglass SVG
-function HourglassIcon() {
-  return (
-    <svg
-      width="48"
-      height="48"
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="mx-auto mb-6"
-    >
-      <path
-        d="M14 6h20v10l-7 8 7 8v10H14V32l7-8-7-8V6z"
-        stroke="#2D2A26"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <path
-        d="M18 38h12v-6l-6-6-6 6v6z"
-        fill="#C4956A"
-        opacity="0.5"
-      />
-      <line x1="10" y1="6" x2="38" y2="6" stroke="#2D2A26" strokeWidth="2" strokeLinecap="round" />
-      <line x1="10" y1="42" x2="38" y2="42" stroke="#2D2A26" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
+type Stage =
+  | "entering"
+  | "step1"
+  | "step2-counting"
+  | "step2-text"
+  | "step3-counting"
+  | "step3-text"
+  | "silence"
+  | "final";
 
 export default function ResultScreen({
   result,
@@ -56,17 +33,17 @@ export default function ResultScreen({
   const [step3Text, setStep3Text] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [enterVisible, setEnterVisible] = useState(false);
+  const [isReducing, setIsReducing] = useState(false);
 
   const cancelAnimRef = useRef<(() => void) | null>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const displayRef = useRef(0);
 
-  // Keep displayRef in sync
   useEffect(() => {
     displayRef.current = displaySeconds;
   }, [displaySeconds]);
 
-  // Start countdown ticking
+  // Countdown ticking
   useEffect(() => {
     if (!countdownActive) {
       if (countdownRef.current) {
@@ -89,7 +66,6 @@ export default function ResultScreen({
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // Entering: dark screen for 1s, then fade in
     if (stage === "entering") {
       timers.push(setTimeout(() => {
         setEnterVisible(true);
@@ -99,19 +75,21 @@ export default function ResultScreen({
       }, 1000));
     }
 
-    // After 5s in step1, start step2
+    // STEP 1: 5 seconds of full remaining time
     if (stage === "step1") {
       timers.push(setTimeout(() => {
         setStage("step2-counting");
         setCountdownActive(false);
+        setIsReducing(true);
 
-        // Animate down to awakeSeconds over 3s
+        // 3s silent reduction
         cancelAnimRef.current = animateValue(
           displayRef.current,
           Math.round(result.awakeSeconds),
           3000,
           (v) => setDisplaySeconds(v),
           () => {
+            setIsReducing(false);
             setStage("step2-text");
             setStep2Text(true);
             setCountdownActive(true);
@@ -120,18 +98,22 @@ export default function ResultScreen({
       }, 5000));
     }
 
-    // After 5s in step2-text, start step3
+    // STEP 2 text: 5 seconds, then step 3
     if (stage === "step2-text") {
       timers.push(setTimeout(() => {
         setStage("step3-counting");
         setCountdownActive(false);
+        setStep2Text(false);
+        setIsReducing(true);
 
+        // 3s silent reduction
         cancelAnimRef.current = animateValue(
           displayRef.current,
           Math.round(result.healthySeconds),
           3000,
           (v) => setDisplaySeconds(v),
           () => {
+            setIsReducing(false);
             setStage("step3-text");
             setStep3Text(true);
             setCountdownActive(true);
@@ -140,20 +122,20 @@ export default function ResultScreen({
       }, 5000));
     }
 
-    // After step3-text, silence then show actions
+    // STEP 3 text: clear text, enter silence
     if (stage === "step3-text") {
       timers.push(setTimeout(() => {
-        setStep2Text(false);
         setStep3Text(false);
         setStage("silence");
       }, 3000));
     }
 
+    // Silence: 8 seconds, then show actions
     if (stage === "silence") {
       timers.push(setTimeout(() => {
         setShowActions(true);
         setStage("final");
-      }, 7000));
+      }, 8000));
     }
 
     return () => {
@@ -165,125 +147,72 @@ export default function ResultScreen({
     };
   }, [stage, result]);
 
-  const ymd = secondsToYMD(result.remainingSeconds);
-
-  // Find 2 lowest-scoring categories for advice
-  const lowestCategories = useMemo(() => {
-    return [...result.categoryScores]
-      .sort((a, b) => a.score - b.score)
-      .slice(0, 2);
-  }, [result.categoryScores]);
-
-  // Block gauge: fraction of remaining life
-  const lifeFraction = Math.min(1, result.remainingYears / result.estimatedLifespan);
+  const isFinal = stage === "final" || stage === "silence";
 
   return (
     <div className="min-h-screen bg-bg-base">
       {/* Dark overlay for entering */}
       {stage === "entering" && (
-        <div className="fixed inset-0 bg-[#2D2A26] z-50 transition-opacity duration-800"
-             style={{ opacity: 1 }} />
+        <div className="fixed inset-0 bg-bg-base z-50" />
       )}
 
       <div
-        className="transition-opacity duration-800 ease-out"
+        className="transition-opacity duration-1000 ease-out"
         style={{ opacity: enterVisible ? 1 : 0 }}
       >
-        {/* Main result section */}
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
-          <HourglassIcon />
-
-          <p className="text-xs tracking-[0.2em] text-text-secondary mb-6">
-            YOUR REMAINING TIME
-          </p>
-
-          {/* Years/months/days */}
-          <p className="text-lg md:text-xl text-text-primary font-semibold mb-2">
-            残り {ymd.years}年 {ymd.months}ヶ月 {ymd.days}日
-          </p>
-
-          {/* Countdown */}
-          <div className="mb-4">
-            <span className="tabular-nums font-bold text-5xl md:text-6xl text-text-primary">
-              {formatSeconds(displaySeconds)}
-            </span>
-            <span className="text-lg text-text-secondary ml-2">秒</span>
-          </div>
-
-          {/* Step messages */}
-          <div className="h-12 flex items-center justify-center mb-8">
-            {step2Text && (
-              <p className="text-sm text-text-secondary animate-fade-in text-center">
-                あなたは人生の1/3を眠っている
-              </p>
-            )}
-            {step3Text && (
-              <p className="text-sm text-text-secondary animate-fade-in text-center">
-                健康に動ける時間は、さらに短い
-              </p>
-            )}
-          </div>
-
-          {/* Life info */}
-          <div className="text-sm text-text-secondary text-center mb-6 space-y-1">
-            <p>推定寿命: {result.estimatedLifespan.toFixed(1)}歳</p>
-            <p>現在の年齢: {info.age}歳</p>
-          </div>
-
-          {/* Block gauge */}
-          <div className="w-full max-w-xs mb-12">
-            <div className="h-3 bg-bar-bg rounded-full overflow-hidden">
-              <div
-                className="h-full bg-btn-primary rounded-full transition-all duration-700"
-                style={{ width: `${lifeFraction * 100}%` }}
-              />
+        {/* Main countdown section */}
+        <div className="min-h-screen flex flex-col items-center justify-center px-6">
+          <div className="text-center">
+            {/* Counter */}
+            <div className="mb-4">
+              <span
+                className="mono tabular-nums font-extralight tracking-wider transition-colors duration-500"
+                style={{
+                  fontSize: isFinal ? "100px" : "80px",
+                  lineHeight: 1.1,
+                  color: isReducing ? "#FF3333" : "#FFFFFF",
+                }}
+              >
+                {formatSeconds(displaySeconds)}
+              </span>
             </div>
-            <div className="flex justify-between text-xs text-text-secondary mt-1">
-              <span>0</span>
-              <span>{result.estimatedLifespan.toFixed(0)}歳</span>
-            </div>
-          </div>
 
-          {/* Category scores */}
-          <div className="w-full max-w-sm">
-            <CategoryBar scores={result.categoryScores} />
+            <p className="label mb-8">
+              SECONDS
+            </p>
+
+            {/* Step messages */}
+            <div className="h-12 flex items-center justify-center">
+              {step2Text && (
+                <p className="text-sm font-light text-text-secondary animate-fade-in">
+                  あなたは人生の1/3を眠っている
+                </p>
+              )}
+              {step3Text && (
+                <p className="text-sm font-light text-text-secondary animate-fade-in">
+                  健康に動ける時間は、さらに短い
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Actions - fade in after silence */}
         {showActions && (
           <div className="px-6 pb-20 animate-fade-in">
-            <div className="max-w-sm mx-auto">
-              {/* Advice cards */}
-              <div className="space-y-4 mb-12">
-                <p className="text-xs tracking-[0.2em] text-text-secondary">
-                  IMPROVEMENT
-                </p>
-                {lowestCategories.map((cs) => (
-                  <AdviceCard
-                    key={cs.category}
-                    category={cs.category}
-                    score={cs.score}
-                  />
-                ))}
-              </div>
+            <div className="max-w-sm mx-auto flex flex-col items-center gap-8">
+              <ShareButton seconds={displaySeconds} />
 
-              {/* Share + restart */}
-              <div className="flex flex-col items-center gap-6 mb-12">
-                <ShareButton seconds={displaySeconds} />
+              <button
+                onClick={onRestart}
+                className="text-xs text-text-secondary tracking-wider
+                           hover:text-white transition-colors duration-200"
+              >
+                もう一度やり直す
+              </button>
 
-                <button
-                  onClick={onRestart}
-                  className="text-sm text-text-secondary underline underline-offset-4
-                             hover:text-text-primary transition-colors duration-200"
-                >
-                  もう一度やり直す
-                </button>
-              </div>
-
-              {/* Disclaimer */}
-              <p className="text-xs text-text-secondary text-center leading-relaxed">
-                この結果は統計データとAIの推定に基づくもので、
+              <p className="text-[10px] text-text-secondary/50 text-center leading-relaxed mt-8">
+                この結果は統計データに基づく推定であり、
                 <br />
                 医学的な正確性を保証するものではありません。
               </p>

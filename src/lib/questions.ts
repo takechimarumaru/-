@@ -1,13 +1,22 @@
 import { Question, CategoryMeta } from "@/types";
 
 export const categories: CategoryMeta[] = [
-  { id: "body", label: "BODY", accent: "var(--accent-body)" },
-  { id: "mind", label: "MIND", accent: "var(--accent-mind)" },
-  { id: "habit", label: "HABIT", accent: "var(--accent-habit)" },
-  { id: "relation", label: "RELATION", accent: "var(--accent-relation)" },
-  { id: "work", label: "WORK", accent: "var(--accent-work)" },
-  { id: "environment", label: "ENVIRONMENT", accent: "var(--accent-env)" },
+  { id: "body", label: "BODY" },
+  { id: "mind", label: "MIND" },
+  { id: "habit", label: "HABIT" },
+  { id: "relation", label: "RELATION" },
+  { id: "work", label: "WORK" },
+  { id: "environment", label: "ENVIRONMENT" },
 ];
+
+export const categoryTaglines: Record<string, string> = {
+  body: "あなたは、自分の身体を知っていますか",
+  mind: "あなたの心は、今どこにありますか",
+  habit: "繰り返しが、あなたを作っている",
+  relation: "あなたの周りに、誰がいますか",
+  work: "あなたの時間は、誰のものですか",
+  environment: "あなたを取り巻くものは、何ですか",
+};
 
 export const questions: Question[] = [
   // BODY
