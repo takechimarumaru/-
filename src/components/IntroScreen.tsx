@@ -33,6 +33,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
     <div
       ref={containerRef}
       className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
+      style={{ background: "radial-gradient(ellipse 80% 60% at 50% 50%, #0D0D0D, #050505)" }}
       onMouseMove={handleMouseMove}
     >
       {/* Perspective grid with parallax */}

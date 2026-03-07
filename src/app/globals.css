@@ -57,8 +57,8 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(200,180,160,0.04) 0.5px, transparent 0.5px),
-    linear-gradient(90deg, rgba(200,180,160,0.04) 0.5px, transparent 0.5px);
+    linear-gradient(rgba(200,180,160,0.06) 0.5px, transparent 0.5px),
+    linear-gradient(90deg, rgba(200,180,160,0.06) 0.5px, transparent 0.5px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
   pointer-events: none;
@@ -81,8 +81,8 @@ body {
   left: -50%;
   top: -20%;
   background-image:
-    linear-gradient(rgba(200,180,160,0.04) 0.5px, transparent 0.5px),
-    linear-gradient(90deg, rgba(200,180,160,0.04) 0.5px, transparent 0.5px);
+    linear-gradient(rgba(200,180,160,0.06) 0.5px, transparent 0.5px),
+    linear-gradient(90deg, rgba(200,180,160,0.06) 0.5px, transparent 0.5px);
   background-size: 60px 60px;
   transform: rotateX(60deg);
   transform-origin: center center;

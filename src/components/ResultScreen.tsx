@@ -144,7 +144,7 @@ export default function ResultScreen({
 
                 addTimer(() => {
                   setShowActions(true);
-                }, 8000);
+                }, 2000);
               }, 3000);
             });
           }, 5000);
@@ -292,22 +292,30 @@ export default function ResultScreen({
                   医学的な正確性を保証するものではありません。
                 </p>
 
-                {/* Logo */}
-                <div
-                  className="flex flex-col items-center gap-1 transition-opacity duration-500 cursor-default"
-                  style={{ marginTop: 40, opacity: 0.7 }}
+                {/* Logo — links to X account */}
+                <a
+                  href="https://x.com/Kosu_dot_kuma"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center gap-1 transition-opacity duration-500"
+                  style={{ marginTop: 40, opacity: 0.5 }}
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = "1.0"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.7"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.5"; }}
                 >
                   <img
                     src="/logo.png"
-                    alt="こす.くま"
-                    style={{ width: 150, filter: "invert(1) brightness(1.8)", mixBlendMode: "screen" }}
+                    alt="こすくまくん"
+                    style={{
+                      width: 80,
+                      height: "auto",
+                      filter: "invert(1) brightness(1.8)",
+                      mixBlendMode: "screen" as const,
+                    }}
                   />
                   <span style={{ fontSize: 8, color: "#3A3A3A", letterSpacing: "0.1em" }}>
                     こす.くま
                   </span>
-                </div>
+                </a>
               </div>
             </div>
           )}
