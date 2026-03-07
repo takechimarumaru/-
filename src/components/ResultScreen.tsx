@@ -193,6 +193,13 @@ export default function ResultScreen({
       >
         <div className="min-h-screen flex flex-col items-center justify-center px-6">
           <div className="text-center">
+            {/* "あなたの残り時間は…" intro text */}
+            {enterVisible && (
+              <p className="text-xl font-light mb-6 animate-fade-in" style={{ color: "#999", fontSize: 20 }}>
+                あなたの残り時間は…
+              </p>
+            )}
+
             {/* Top label — reason text */}
             <div className="h-8 flex items-center justify-center mb-4">
               {topLabel && (
@@ -264,7 +271,7 @@ export default function ResultScreen({
 
           {/* Actions — centered below counter */}
           {showActions && (
-            <div className="mt-20 w-full animate-fade-in" style={{ marginTop: 80 }}>
+            <div className="w-full animate-fade-in" style={{ marginTop: 100 }}>
               <div className="flex flex-col items-center gap-8">
                 <ShareButton seconds={displaySeconds} result={result} />
 
@@ -290,7 +297,7 @@ export default function ResultScreen({
       {/* Logo — bottom right */}
       <div
         className="fixed flex flex-col items-center gap-1 transition-opacity duration-500 cursor-default"
-        style={{ bottom: 30, right: 30, opacity: 0.6, zIndex: 3 }}
+        style={{ bottom: 30, right: 30, opacity: 0.6, zIndex: 50 }}
         onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
         onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.6"; }}
       >
@@ -298,7 +305,7 @@ export default function ResultScreen({
           src="/logo.png"
           alt=""
           className="w-[120px]"
-          style={{ filter: "invert(1)" }}
+          style={{ filter: "invert(1) brightness(2)" }}
         />
         <span style={{ fontSize: 10, color: "#666", letterSpacing: "0.1em" }}>
           こす.くま
