@@ -2,7 +2,7 @@
 
 @theme {
   --color-bg-base: #0A0A0A;
-  --color-bg-surface: #1A1A1A;
+  --color-bg-surface: #111111;
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #666666;
   --color-accent-red: #FF3333;
@@ -19,7 +19,7 @@ html {
 }
 
 body {
-  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Noto Serif JP", serif;
   background-color: #0A0A0A;
   color: #FFFFFF;
   -webkit-font-smoothing: antialiased;
@@ -27,20 +27,69 @@ body {
   overflow-x: hidden;
 }
 
+.mono {
+  font-family: "Space Mono", "JetBrains Mono", monospace;
+}
+
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-.mono {
-  font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", "Courier New", monospace;
-}
-
 .label {
+  font-family: "Space Mono", "JetBrains Mono", monospace;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.3em;
   color: #666666;
 }
+
+/* Perspective grid background */
+.grid-bg {
+  position: relative;
+}
+
+.grid-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
+  pointer-events: none;
+}
+
+/* Geometric wireframe decoration */
+.wireframe-box {
+  position: absolute;
+  border: 1px solid rgba(255,255,255,0.06);
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+/* Category gradient accents */
+.gradient-body { background: linear-gradient(135deg, #00CED1, #00BFFF); }
+.gradient-mind { background: linear-gradient(135deg, #9B59B6, #E74C9E); }
+.gradient-habit { background: linear-gradient(135deg, #FF6B35, #FFD700); }
+.gradient-relation { background: linear-gradient(135deg, #00E5A0, #00CED1); }
+.gradient-work { background: linear-gradient(135deg, #4A90D9, #9B59B6); }
+.gradient-environment { background: linear-gradient(135deg, #E74C9E, #FF6B35); }
+
+.gradient-text-body { background: linear-gradient(135deg, #00CED1, #00BFFF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text-mind { background: linear-gradient(135deg, #9B59B6, #E74C9E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text-habit { background: linear-gradient(135deg, #FF6B35, #FFD700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text-relation { background: linear-gradient(135deg, #00E5A0, #00CED1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text-work { background: linear-gradient(135deg, #4A90D9, #9B59B6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text-environment { background: linear-gradient(135deg, #E74C9E, #FF6B35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* Glow effect for category accents */
+.glow-body { box-shadow: 0 0 20px rgba(0,206,209,0.15); }
+.glow-mind { box-shadow: 0 0 20px rgba(155,89,182,0.15); }
+.glow-habit { box-shadow: 0 0 20px rgba(255,107,53,0.15); }
+.glow-relation { box-shadow: 0 0 20px rgba(0,229,160,0.15); }
+.glow-work { box-shadow: 0 0 20px rgba(74,144,217,0.15); }
+.glow-environment { box-shadow: 0 0 20px rgba(231,76,158,0.15); }
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -52,15 +101,29 @@ body {
   to { opacity: 0; }
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scramble {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 .animate-fade-in {
-  animation: fadeIn 500ms ease-out forwards;
+  animation: fadeIn 600ms ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 600ms ease-out forwards;
 }
 
 .animate-fade-out {
   animation: fadeOut 300ms ease-out forwards;
 }
 
-/* Custom range slider for dark theme */
+/* Custom range slider */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -74,8 +137,8 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #FFFFFF;
   cursor: pointer;
@@ -83,10 +146,20 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #FFFFFF;
   cursor: pointer;
   border: none;
+}
+
+/* Number input hide arrows */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
