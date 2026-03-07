@@ -89,7 +89,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
             color: "#E8E8E8",
             marginBottom: 24,
             opacity: phase >= 2 ? 1 : 0,
-            animation: phase >= 2 ? "introTitleIn 800ms ease-out forwards" : "none",
+            animation: phase >= 2 ? "introGlitchIn 800ms ease-out forwards" : "none",
           }}
         >
           あと何秒、生きられる？
@@ -119,8 +119,17 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
           }}
         >
           <button
-            onClick={onStart}
-            className="mono transition-all duration-300 ease-out active:scale-[0.98]"
+            onClick={(e) => {
+              const btn = e.currentTarget;
+              btn.style.transform = "scale(0.97)";
+              btn.style.borderColor = "rgba(232,232,232,1.0)";
+              setTimeout(() => {
+                btn.style.transform = "scale(1)";
+                btn.style.borderColor = "rgba(232,232,232,0.15)";
+                onStart();
+              }, 200);
+            }}
+            className="mono"
             style={{
               padding: "16px 40px",
               border: "1px solid rgba(232,232,232,0.15)",
@@ -130,6 +139,8 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
               fontSize: 14,
               fontWeight: 300,
               letterSpacing: "0.15em",
+              transition: "all 0.2s ease-out",
+              cursor: "pointer",
             }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.35)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.15)"; }}

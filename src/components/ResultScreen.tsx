@@ -210,7 +210,7 @@ export default function ResultScreen({
                   fontWeight: 300,
                   lineHeight: 1.1,
                   letterSpacing: "0.02em",
-                  color: isReducing ? "#D4443B" : "#F5F5F5",
+                  color: isReducing ? "#D4443B" : "#F0EDE8",
                 }}
               >
                 {formatSeconds(displaySeconds)}
@@ -291,28 +291,29 @@ export default function ResultScreen({
                   <br />
                   医学的な正確性を保証するものではありません。
                 </p>
+
+                {/* Logo */}
+                <div
+                  className="flex flex-col items-center gap-1 transition-opacity duration-500 cursor-default"
+                  style={{ marginTop: 40, opacity: 0.7 }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = "1.0"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.7"; }}
+                >
+                  <img
+                    src="/logo.png"
+                    alt="こす.くま"
+                    style={{ width: 150, filter: "invert(1) brightness(1.8)", mixBlendMode: "screen" }}
+                  />
+                  <span style={{ fontSize: 8, color: "#3A3A3A", letterSpacing: "0.1em" }}>
+                    こす.くま
+                  </span>
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* Logo — bottom right per spec */}
-      <div
-        className="fixed flex flex-col items-center gap-1 transition-opacity duration-500 cursor-default"
-        style={{ bottom: 40, right: 40, opacity: 0.4, zIndex: 50 }}
-        onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.8"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.4"; }}
-      >
-        <img
-          src="/logo.png"
-          alt="こす.くま"
-          style={{ width: 100, filter: "invert(1) brightness(1.8)" }}
-        />
-        <span style={{ fontSize: 8, color: "#3A3A3A", letterSpacing: "0.1em" }}>
-          こす.くま
-        </span>
-      </div>
     </div>
   );
 }

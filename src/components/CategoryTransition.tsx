@@ -28,6 +28,15 @@ const categoryGlowColors: Record<CategoryId, string> = {
   environment: "rgba(122,158,159,0.06)",
 };
 
+const categoryOverlayColors: Record<CategoryId, string> = {
+  body: "#C4956A",
+  mind: "#7B8FA1",
+  habit: "#A45A52",
+  relation: "#6B8F71",
+  work: "#8B8178",
+  environment: "#7A9E9F",
+};
+
 function LoadingScramble() {
   const [display, setDisplay] = useState("000,000,000");
   const rafRef = useRef<number | null>(null);
@@ -68,6 +77,7 @@ export default function CategoryTransition({
 
   const message = completionMessages[completedCategoryId];
   const glowColor = categoryGlowColors[completedCategoryId];
+  const overlayColor = categoryOverlayColors[completedCategoryId];
 
   useEffect(() => {
     const t1 = setTimeout(() => setVisible(true), 200);
@@ -85,6 +95,12 @@ export default function CategoryTransition({
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 grid-bg relative overflow-hidden">
+      {/* Full-screen category color flash overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none animate-category-flash"
+        style={{ background: overlayColor, zIndex: 3 }}
+      />
+
       <ParticleCanvas />
 
       <div
@@ -102,8 +118,8 @@ export default function CategoryTransition({
       />
 
       <div
-        className="text-center transition-opacity duration-500 ease-out relative"
-        style={{ opacity: visible ? 1 : 0, zIndex: 2 }}
+        className="text-center relative"
+        style={{ opacity: visible ? 1 : 0, transition: "opacity 500ms ease-out", zIndex: 2 }}
       >
         <p
           className={visible ? "animate-fade-in" : ""}

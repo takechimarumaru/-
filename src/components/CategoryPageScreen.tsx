@@ -31,12 +31,12 @@ const barGradientClass: Record<CategoryId, string> = {
 };
 
 const categoryFlashCSS: Record<CategoryId, string> = {
-  body: "linear-gradient(135deg, rgba(196,149,106,0.06), rgba(212,165,116,0.06))",
-  mind: "linear-gradient(135deg, rgba(123,143,161,0.06), rgba(143,165,183,0.06))",
-  habit: "linear-gradient(135deg, rgba(164,90,82,0.06), rgba(184,107,98,0.06))",
-  relation: "linear-gradient(135deg, rgba(107,143,113,0.06), rgba(125,163,131,0.06))",
-  work: "linear-gradient(135deg, rgba(139,129,120,0.06), rgba(157,147,138,0.06))",
-  environment: "linear-gradient(135deg, rgba(122,158,159,0.06), rgba(140,178,179,0.06))",
+  body: "#C4956A",
+  mind: "#7B8FA1",
+  habit: "#A45A52",
+  relation: "#6B8F71",
+  work: "#8B8178",
+  environment: "#7A9E9F",
 };
 
 export default function CategoryPageScreen({
@@ -50,6 +50,7 @@ export default function CategoryPageScreen({
   const [sleepValue, setSleepValue] = useState<number>(7.0);
   const [fading, setFading] = useState(false);
   const [flashVisible, setFlashVisible] = useState(false);
+  const [animatingButton, setAnimatingButton] = useState<string | null>(null);
 
   const category = categories.find((c) => c.id === categoryId)!;
   const globalProgress = ((categoryIndex) / totalCategories) * 100;
@@ -60,6 +61,9 @@ export default function CategoryPageScreen({
 
   const handleSelect = (questionId: number, value: number) => {
     setLocalAnswers((prev) => ({ ...prev, [questionId]: value }));
+    const key = `${questionId}-${value}`;
+    setAnimatingButton(key);
+    setTimeout(() => setAnimatingButton(null), 150);
   };
 
   const handleSubmit = () => {
@@ -90,8 +94,8 @@ export default function CategoryPageScreen({
       {flashVisible && (
         <>
           <div
-            className="fixed inset-0 z-40 pointer-events-none animate-flash"
-            style={{ background: categoryFlashCSS[categoryId] }}
+            className="fixed inset-0 z-40 pointer-events-none"
+            style={{ background: categoryFlashCSS[categoryId], animation: "flashOverlay 150ms ease-out forwards" }}
           />
           <div
             className="fixed inset-0 z-[41] pointer-events-none flex items-center justify-center"
@@ -178,6 +182,8 @@ export default function CategoryPageScreen({
                     <div className="flex justify-end gap-2">
                       {[1, 2, 3, 4, 5, 6, 7].map((value) => {
                         const selected = localAnswers[q.id] === value;
+                        const btnKey = `${q.id}-${value}`;
+                        const isAnimating = animatingButton === btnKey;
                         return (
                           <button
                             key={value}
@@ -189,6 +195,7 @@ export default function CategoryPageScreen({
                               borderRadius: "50%",
                               border: `1px solid ${selected ? "rgba(232,232,232,0.5)" : "rgba(232,232,232,0.1)"}`,
                               background: "transparent",
+                              animation: isAnimating ? "radioPop 150ms ease-out" : "none",
                             }}
                           >
                             {selected && (
