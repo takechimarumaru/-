@@ -58,8 +58,8 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(200,180,160,0.10) 0.5px, transparent 0.5px),
-    linear-gradient(90deg, rgba(200,180,160,0.10) 0.5px, transparent 0.5px);
+    linear-gradient(rgba(200,180,160,0.14) 0.5px, transparent 0.5px),
+    linear-gradient(90deg, rgba(200,180,160,0.14) 0.5px, transparent 0.5px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
@@ -83,8 +83,8 @@ body {
   left: -50%;
   top: -20%;
   background-image:
-    linear-gradient(rgba(200,180,160,0.10) 0.5px, transparent 0.5px),
-    linear-gradient(90deg, rgba(200,180,160,0.10) 0.5px, transparent 0.5px);
+    linear-gradient(rgba(200,180,160,0.14) 0.5px, transparent 0.5px),
+    linear-gradient(90deg, rgba(200,180,160,0.14) 0.5px, transparent 0.5px);
   background-size: 60px 60px;
   transform: rotateX(60deg);
   transform-origin: center center;
@@ -112,7 +112,7 @@ body {
 /* Geometric wireframe decoration */
 .wireframe-box {
   position: absolute;
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
   transform: rotate(15deg);
   pointer-events: none;
 }

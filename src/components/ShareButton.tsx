@@ -26,7 +26,9 @@ function formatOkuManSeconds(seconds: number): string {
 
 export default function ShareButton({ seconds, result }: ShareButtonProps) {
   const ymd = secondsToYMD(seconds);
-  const shareText = `残り${ymd.years}年${ymd.months}ヶ月。思ったより少なかった。\n\n#寿命測定\nhttps://five-gamma-45.vercel.app`;
+  const okuMan = formatOkuManSeconds(seconds);
+
+  const shareText = `私の残り時間は${okuMan}秒（${ymd.years}年${ymd.months}ヶ月）。思ったより少なかった。\n\n#寿命測定\nhttps://five-gamma-45.vercel.app`;
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
