@@ -20,7 +20,6 @@ export interface Question {
 export interface CategoryMeta {
   id: CategoryId;
   label: string;
-  accent: string;
 }
 
 export interface BasicInfo {

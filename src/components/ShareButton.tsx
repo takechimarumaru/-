@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 interface ShareButtonProps {
   seconds: number;
@@ -13,33 +13,27 @@ function generateOGPImage(seconds: number): Promise<string> {
     canvas.height = 630;
     const ctx = canvas.getContext("2d")!;
 
-    // Background
-    ctx.fillStyle = "#2D2A26";
+    // Black background
+    ctx.fillStyle = "#0A0A0A";
     ctx.fillRect(0, 0, 1200, 630);
 
-    // Subtle radial gradient
-    const gradient = ctx.createRadialGradient(600, 250, 50, 600, 315, 500);
-    gradient.addColorStop(0, "rgba(196, 149, 106, 0.15)");
-    gradient.addColorStop(1, "transparent");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 1200, 630);
-
-    // Label
-    ctx.fillStyle = "#8A8078";
-    ctx.font = "24px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("あなたの残り時間", 600, 220);
-
-    // Seconds
+    // Seconds - large white text
     const formatted = Math.round(seconds).toLocaleString("en-US");
-    ctx.fillStyle = "#F5F0EA";
-    ctx.font = "bold 80px sans-serif";
-    ctx.fillText(`${formatted} 秒`, 600, 340);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "200 96px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(formatted, 600, 320);
+
+    // Label below
+    ctx.fillStyle = "#666666";
+    ctx.font = "200 20px monospace";
+    ctx.letterSpacing = "8px";
+    ctx.fillText("SECONDS", 600, 380);
 
     // Footer
-    ctx.fillStyle = "#8A8078";
-    ctx.font = "20px sans-serif";
-    ctx.fillText("#LifeTimer", 600, 540);
+    ctx.fillStyle = "#333333";
+    ctx.font = "16px monospace";
+    ctx.fillText("#LifeTimer", 600, 560);
 
     resolve(canvas.toDataURL("image/png"));
   });
@@ -70,7 +64,6 @@ export default function ShareButton({ seconds }: ShareButtonProps) {
       }
     }
 
-    // Fallback: copy to clipboard and open Twitter
     try {
       await navigator.clipboard.writeText(shareText);
       setCopied(true);
@@ -84,15 +77,14 @@ export default function ShareButton({ seconds }: ShareButtonProps) {
   }, [shareText]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <button
-        onClick={handleShare}
-        className="px-10 py-4 bg-btn-primary text-btn-text rounded-full text-base font-medium
-                   transition-all duration-300 ease-out
-                   hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]"
-      >
-        {copied ? "コピーしました" : "結果をシェアする"}
-      </button>
-    </div>
+    <button
+      onClick={handleShare}
+      className="px-12 py-4 border border-white/30 text-white text-sm font-light tracking-[0.15em]
+                 transition-all duration-300 ease-out
+                 hover:border-white/60 hover:bg-white/5
+                 active:scale-[0.98]"
+    >
+      {copied ? "コピーしました" : "結果をシェアする"}
+    </button>
   );
 }
