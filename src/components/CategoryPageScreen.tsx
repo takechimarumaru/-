@@ -111,33 +111,33 @@ export default function CategoryPageScreen({
       )}
 
       {/* Centered content */}
-      <div className="flex-1 flex items-center justify-center px-5 md:px-8 py-20">
+      <div className="flex-1 flex items-center justify-center px-6 md:px-8 py-20">
         <div className="w-full" style={{ maxWidth: "600px" }}>
           {/* Category header */}
-          <div className="mb-10">
-            <div className="flex items-center justify-between mb-2">
+          <div className="mb-10 overflow-hidden">
+            <div className="flex items-center justify-between mb-2 gap-2">
               <h2
                 className={`mono ${gradientClass[categoryId]}`}
                 style={{ fontSize: 24, fontWeight: 300, letterSpacing: "0.2em" }}
               >
                 {category.label}
               </h2>
-              <span className="label">{categoryIndex + 1} / {totalCategories}</span>
+              <span className="label shrink-0">{categoryIndex + 1} / {totalCategories}</span>
             </div>
             <div className={`h-[1px] ${barGradientClass[categoryId]} opacity-20`} />
           </div>
 
-          {/* Questions — per DESIGN.md: 18px, weight 300, letter-spacing 0.05em, line-height 2.0 */}
+          {/* Questions */}
           <div className="space-y-8">
             {categoryQuestions.map((q, idx) => (
               <div key={q.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms` }}>
                 {q.type === "sleep" ? (
                   <div style={{ border: "1px solid rgba(232,232,232,0.06)", borderRadius: 0, padding: 20 }}>
-                    <div className="flex items-start gap-3 mb-5">
-                      <span className="mono mt-0.5" style={{ fontSize: 12, color: "#5A5A5A" }}>
+                    <div className="flex items-start gap-2 mb-5">
+                      <span className="mono shrink-0" style={{ fontSize: 11, color: "#5A5A5A", minWidth: "1.5em" }}>
                         {String(idx + 1).padStart(2, "0")}
                       </span>
-                      <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 2.0, letterSpacing: "0.05em", color: "rgba(232,232,232,0.85)" }}>
+                      <p className="flex-1 min-w-0" style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.9, letterSpacing: "0.03em", color: "rgba(232,232,232,0.85)" }}>
                         {q.text}
                       </p>
                     </div>
@@ -169,17 +169,17 @@ export default function CategoryPageScreen({
                   </div>
                 ) : (
                   <div>
-                    <div className="flex items-start gap-3 mb-3">
-                      <span className="mono mt-0.5" style={{ fontSize: 12, color: "#5A5A5A" }}>
+                    <div className="flex items-start gap-2 mb-3">
+                      <span className="mono shrink-0" style={{ fontSize: 11, color: "#5A5A5A", minWidth: "1.5em" }}>
                         {String(idx + 1).padStart(2, "0")}
                       </span>
-                      <p className="flex-1" style={{ fontSize: 15, fontWeight: 300, lineHeight: 2.0, letterSpacing: "0.05em", color: "rgba(232,232,232,0.85)" }}>
+                      <p className="flex-1 min-w-0" style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.9, letterSpacing: "0.03em", color: "rgba(232,232,232,0.85)" }}>
                         {q.text}
                       </p>
                     </div>
 
-                    {/* Radio buttons — circle border, selected = small white dot in center, NO glow */}
-                    <div className="flex justify-end gap-2">
+                    {/* Radio buttons — 32px, gap-1 for mobile fit */}
+                    <div className="flex justify-end gap-1 sm:gap-2">
                       {[1, 2, 3, 4, 5, 6, 7].map((value) => {
                         const selected = localAnswers[q.id] === value;
                         const btnKey = `${q.id}-${value}`;
@@ -190,8 +190,8 @@ export default function CategoryPageScreen({
                             onClick={() => handleSelect(q.id, value)}
                             className="flex items-center justify-center shrink-0 transition-all duration-200"
                             style={{
-                              width: 36,
-                              height: 36,
+                              width: 32,
+                              height: 32,
                               borderRadius: "50%",
                               border: `1px solid ${selected ? "rgba(232,232,232,0.5)" : "rgba(232,232,232,0.1)"}`,
                               background: "transparent",
@@ -199,14 +199,7 @@ export default function CategoryPageScreen({
                             }}
                           >
                             {selected && (
-                              <div
-                                style={{
-                                  width: 8,
-                                  height: 8,
-                                  borderRadius: "50%",
-                                  background: "#E8E8E8",
-                                }}
-                              />
+                              <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#E8E8E8" }} />
                             )}
                           </button>
                         );
@@ -215,7 +208,7 @@ export default function CategoryPageScreen({
 
                     {idx === 0 && (
                       <div className="flex justify-end mt-1">
-                        <div className="flex gap-2 w-[calc(7*2.25rem+6*0.5rem)]">
+                        <div className="flex w-[248px]">
                           <span style={{ fontSize: 9, color: "#5A5A5A", letterSpacing: "0.05em" }}>いいえ</span>
                           <span className="flex-1" />
                           <span style={{ fontSize: 9, color: "#5A5A5A", letterSpacing: "0.05em" }}>はい</span>

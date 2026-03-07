@@ -38,7 +38,7 @@ export default function ParticleCanvas() {
         vx: (Math.random() - 0.5) * 0.3,
         vy: (Math.random() - 0.5) * 0.3,
         size: 0.8 + Math.random() * 0.8,
-        opacity: 0.06 + Math.random() * 0.12,
+        opacity: 0.15 + Math.random() * 0.20,
       });
     }
 

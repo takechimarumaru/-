@@ -206,10 +206,11 @@ export default function ResultScreen({
               <span
                 className="mono tabular-nums transition-colors duration-500 block"
                 style={{
-                  fontSize: "clamp(64px, 15vw, 120px)",
+                  fontSize: "clamp(36px, 9vw, 120px)",
                   fontWeight: 300,
                   lineHeight: 1.1,
-                  letterSpacing: "0.02em",
+                  letterSpacing: "-0.02em",
+                  padding: "0 16px",
                   color: isReducing ? "#D4443B" : "#F0EDE8",
                 }}
               >
@@ -248,20 +249,21 @@ export default function ResultScreen({
                 <div className="inline-block text-left">
                   {summaryRows.map((row) => {
                     const isActive = row.step === currentStep;
+                    const ymdData = secondsToYMD(row.seconds);
                     return (
                       <div
                         key={row.step}
-                        className="flex items-baseline gap-4 mb-1.5"
+                        className="mb-2"
                         style={{
                           color: isActive ? "#E8E8E8" : "#5A5A5A",
-                          fontSize: 12,
-                          fontWeight: 300,
+                          fontSize: 11,
+                          fontWeight: isActive ? 400 : 300,
                         }}
                       >
-                        <span className="mono w-28 shrink-0">{row.label}</span>
-                        <span className="mono tabular-nums">{row.age.toFixed(1)}歳</span>
-                        <span className="mx-1">残り</span>
-                        <span className="mono tabular-nums">{secondsToYMD(row.seconds).years}年{secondsToYMD(row.seconds).months}ヶ月{secondsToYMD(row.seconds).days}日</span>
+                        <div className="flex items-baseline justify-between">
+                          <span className="mono">{row.label}</span>
+                          <span className="mono tabular-nums">{row.age.toFixed(1)}歳　残り {ymdData.years}年{ymdData.months}ヶ月{ymdData.days}日</span>
+                        </div>
                       </div>
                     );
                   })}
@@ -298,7 +300,7 @@ export default function ResultScreen({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-col items-center gap-1 transition-opacity duration-500"
-                  style={{ marginTop: 40, opacity: 0.5 }}
+                  style={{ marginTop: 40, opacity: 0.5, isolation: "isolate" as const }}
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = "1.0"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.5"; }}
                 >
@@ -306,7 +308,7 @@ export default function ResultScreen({
                     src="/logo.png"
                     alt="こすくまくん"
                     style={{
-                      width: 80,
+                      width: 64,
                       height: "auto",
                       filter: "invert(1) brightness(1.8)",
                       mixBlendMode: "screen" as const,

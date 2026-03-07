@@ -7,7 +7,7 @@ const shapes = [
 ];
 
 function ShapeSVG({ type, size }: { type: string; size: number }) {
-  const stroke = "rgba(255,255,255,0.04)";
+  const stroke = "rgba(255,255,255,0.10)";
   if (type === "triangle") {
     const h = size * 0.866;
     return (
