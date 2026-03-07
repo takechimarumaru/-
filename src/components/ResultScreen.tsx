@@ -4,6 +4,8 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { CalculationResult, BasicInfo } from "@/types";
 import { easeInOutCubic, formatSeconds, secondsToYMD } from "@/lib/animations";
 import ShareButton from "./ShareButton";
+import ParticleCanvas from "./ParticleCanvas";
+import FloatingShapes from "./FloatingShapes";
 
 interface ResultScreenProps {
   result: CalculationResult;
@@ -171,15 +173,23 @@ export default function ResultScreen({
   const ymd = secondsToYMD(displaySeconds);
 
   return (
-    <div className="min-h-screen bg-bg-base grid-bg relative overflow-hidden">
+    <div className="min-h-screen bg-bg-base relative overflow-hidden">
       {entering && <div className="fixed inset-0 bg-bg-base z-50" />}
 
-      <div className="wireframe-box w-48 h-48 top-10 -right-16 opacity-20" />
-      <div className="wireframe-box w-28 h-28 bottom-32 -left-8 opacity-15" style={{ transform: "rotate(-25deg)" }} />
+      {/* Animated perspective grid */}
+      <div className="perspective-grid">
+        <div className="perspective-grid-inner" />
+      </div>
+
+      {/* Floating wireframe shapes */}
+      <FloatingShapes />
+
+      {/* Particle starfield */}
+      <ParticleCanvas />
 
       <div
-        className="transition-opacity duration-1000 ease-out"
-        style={{ opacity: enterVisible ? 1 : 0 }}
+        className="transition-opacity duration-1000 ease-out relative"
+        style={{ opacity: enterVisible ? 1 : 0, zIndex: 2 }}
       >
         <div className="min-h-screen flex flex-col items-center justify-center px-6">
           <div className="text-center">
@@ -230,7 +240,6 @@ export default function ResultScreen({
               <div className="mt-10 animate-fade-in">
                 <div className="inline-block text-left">
                   {summaryRows.map((row) => {
-                    const rowYmd = secondsToYMD(row.seconds);
                     const isActive = row.step === currentStep;
                     return (
                       <div
@@ -252,41 +261,49 @@ export default function ResultScreen({
               </div>
             )}
           </div>
-        </div>
 
-        {/* Actions */}
-        {showActions && (
-          <div className="px-6 pb-20 animate-fade-in">
-            <div className="max-w-sm mx-auto flex flex-col items-center gap-8">
-              <ShareButton seconds={displaySeconds} result={result} />
+          {/* Actions — centered below counter */}
+          {showActions && (
+            <div className="mt-16 w-full animate-fade-in">
+              <div className="flex flex-col items-center gap-8">
+                <ShareButton seconds={displaySeconds} result={result} />
 
-              <button
-                onClick={onRestart}
-                className="text-xs text-text-secondary tracking-wider mono
-                           hover:text-white transition-colors duration-200"
-              >
-                もう一度測定する
-              </button>
+                <button
+                  onClick={onRestart}
+                  className="text-xs text-text-secondary tracking-wider mono
+                             hover:text-white transition-colors duration-200"
+                >
+                  もう一度測定する
+                </button>
 
-              <p className="text-[10px] text-text-secondary/40 text-center leading-relaxed mt-6">
-                この結果は統計データに基づく推定であり、
-                <br />
-                医学的な正確性を保証するものではありません。
-              </p>
+                <p className="text-[10px] text-text-secondary/40 text-center leading-relaxed mt-6">
+                  この結果は統計データに基づく推定であり、
+                  <br />
+                  医学的な正確性を保証するものではありません。
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Logo */}
-      <img
-        src="/logo.svg"
-        alt=""
-        className="fixed bottom-4 right-4 w-[60px] transition-opacity duration-500"
-        style={{ opacity: 0.15, filter: "brightness(0) invert(0.2)" }}
-        onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.4"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.15"; }}
-      />
+      {/* Logo — bottom right */}
+      <div
+        className="fixed flex flex-col items-center gap-1 transition-opacity duration-500 cursor-default"
+        style={{ bottom: 30, right: 30, opacity: 0.6, zIndex: 3 }}
+        onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.6"; }}
+      >
+        <img
+          src="/logo.svg"
+          alt=""
+          className="w-[120px]"
+          style={{ filter: "invert(1)" }}
+        />
+        <span style={{ fontSize: 10, color: "#666", letterSpacing: "0.1em" }}>
+          こす.くま
+        </span>
+      </div>
     </div>
   );
 }

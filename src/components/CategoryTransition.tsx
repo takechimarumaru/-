@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { CategoryId } from "@/types";
+import ParticleCanvas from "./ParticleCanvas";
 
 interface CategoryTransitionProps {
   completedCategoryId: CategoryId;
@@ -16,6 +17,15 @@ const completionMessages: Record<CategoryId, string> = {
   relation: "つながりの重さを量りました",
   work: "あなたの時間の使い方が見えました",
   environment: "すべての要素が揃いました。算出を開始します。",
+};
+
+const categoryGlowColors: Record<CategoryId, string> = {
+  body: "rgba(0,206,209,0.1)",
+  mind: "rgba(155,89,182,0.1)",
+  habit: "rgba(255,107,53,0.1)",
+  relation: "rgba(0,229,160,0.1)",
+  work: "rgba(74,144,217,0.1)",
+  environment: "rgba(231,76,158,0.1)",
 };
 
 function LoadingScramble() {
@@ -54,6 +64,7 @@ export default function CategoryTransition({
   const [showLoading, setShowLoading] = useState(false);
 
   const message = completionMessages[completedCategoryId];
+  const glowColor = categoryGlowColors[completedCategoryId];
 
   useEffect(() => {
     const t1 = setTimeout(() => setVisible(true), 200);
@@ -70,10 +81,28 @@ export default function CategoryTransition({
   }, [isLast, onComplete]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 grid-bg">
+    <div className="min-h-screen flex items-center justify-center px-6 grid-bg relative overflow-hidden">
+      {/* Particle background */}
+      <ParticleCanvas />
+
+      {/* Category color glow */}
       <div
-        className="text-center transition-opacity duration-500 ease-out"
-        style={{ opacity: visible ? 1 : 0 }}
+        className="absolute pointer-events-none"
+        style={{
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${glowColor}, transparent 70%)`,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        className="text-center transition-opacity duration-500 ease-out relative"
+        style={{ opacity: visible ? 1 : 0, zIndex: 2 }}
       >
         <p className={`text-lg md:text-xl font-light text-white/80 tracking-wide leading-relaxed ${visible ? "animate-glitch-in" : ""}`}>
           {message}
