@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { CalculationResult } from "@/types";
 import { secondsToYMD } from "@/lib/animations";
 
@@ -9,11 +9,24 @@ interface ShareButtonProps {
   result: CalculationResult;
 }
 
-export default function ShareButton({ seconds, result }: ShareButtonProps) {
-  const [copied, setCopied] = useState(false);
+function formatOkuManSeconds(seconds: number): string {
+  const oku = Math.floor(seconds / 100_000_000);
+  const remainder = seconds % 100_000_000;
+  const senman = Math.floor(remainder / 10_000_000);
 
-  const ymd = secondsToYMD(result.healthySeconds);
-  const shareText = `残り${ymd.years}年${ymd.months}ヶ月。思ったより少なかった。 #寿命測定`;
+  if (oku > 0 && senman > 0) {
+    return `${oku}億${senman}千万`;
+  } else if (oku > 0) {
+    return `${oku}億`;
+  } else if (senman > 0) {
+    return `${senman}千万`;
+  }
+  return `${Math.round(seconds / 10000)}万`;
+}
+
+export default function ShareButton({ seconds, result }: ShareButtonProps) {
+  const ymd = secondsToYMD(seconds);
+  const shareText = `残り${ymd.years}年${ymd.months}ヶ月。思ったより少なかった。\n\n#寿命測定\nhttps://five-gamma-45.vercel.app`;
 
   const handleShare = useCallback(async () => {
     if (navigator.share) {
@@ -21,16 +34,8 @@ export default function ShareButton({ seconds, result }: ShareButtonProps) {
         await navigator.share({ title: "寿命測定", text: shareText });
         return;
       } catch {
-        // Fallback below
+        // User cancelled or error — fall through to X
       }
-    }
-
-    try {
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // ignore
     }
 
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
@@ -40,12 +45,22 @@ export default function ShareButton({ seconds, result }: ShareButtonProps) {
   return (
     <button
       onClick={handleShare}
-      className="px-10 py-4 border border-white/20 text-white text-sm mono tracking-[0.15em]
-                 transition-all duration-300 ease-out
-                 hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(0,206,209,0.1)]
-                 active:scale-[0.98]"
+      className="mono transition-all duration-300 ease-out active:scale-[0.98]"
+      style={{
+        padding: "16px 40px",
+        border: "1px solid rgba(232,232,232,0.15)",
+        borderRadius: 0,
+        background: "transparent",
+        color: "#E8E8E8",
+        fontSize: 14,
+        fontWeight: 300,
+        letterSpacing: "0.15em",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.35)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.15)"; }}
     >
-      {copied ? "コピーしました" : "結果をシェアする"}
+      結果をシェアする
     </button>
   );
 }

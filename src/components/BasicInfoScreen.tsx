@@ -19,7 +19,10 @@ export default function BasicInfoScreen({ onSubmit }: BasicInfoScreenProps) {
 
       <div className="relative z-10 w-full max-w-sm">
         <p className="label text-center mb-3">BASIC INFO</p>
-        <h2 className="text-xl font-light text-center text-white mb-16 tracking-wide">
+        <h2
+          className="text-center mb-16"
+          style={{ fontSize: 20, fontWeight: 300, letterSpacing: "0.05em", color: "#E8E8E8" }}
+        >
           まず、あなたのことを教えてください
         </h2>
 
@@ -33,12 +36,23 @@ export default function BasicInfoScreen({ onSubmit }: BasicInfoScreenProps) {
               max={119}
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              className="w-full bg-transparent border-b border-white/20 px-1 py-3 text-xl
-                         text-white outline-none focus:border-cyan-500/60
-                         transition-colors duration-200 mono tabular-nums"
+              className="w-full mono tabular-nums"
+              style={{
+                background: "transparent",
+                borderBottom: "1px solid rgba(232,232,232,0.15)",
+                borderTop: "none",
+                borderLeft: "none",
+                borderRight: "none",
+                borderRadius: 0,
+                padding: "12px 4px",
+                fontSize: 20,
+                fontWeight: 300,
+                color: "#E8E8E8",
+                outline: "none",
+              }}
               placeholder="30"
             />
-            <span className="text-text-secondary text-sm">歳</span>
+            <span style={{ color: "#5A5A5A", fontSize: 14 }}>歳</span>
           </div>
         </div>
 
@@ -53,11 +67,17 @@ export default function BasicInfoScreen({ onSubmit }: BasicInfoScreenProps) {
                 <button
                   key={value}
                   onClick={() => setGender(value)}
-                  className={`flex-1 py-3 text-sm tracking-wider transition-all duration-200 border
-                    ${isSelected
-                      ? "border-cyan-500/60 text-white shadow-[0_0_12px_rgba(0,206,209,0.1)]"
-                      : "border-white/10 text-text-secondary hover:border-white/25"
-                    }`}
+                  className="flex-1 transition-all duration-200"
+                  style={{
+                    padding: "12px 0",
+                    fontSize: 14,
+                    fontWeight: 300,
+                    letterSpacing: "0.05em",
+                    border: `1px solid ${isSelected ? "rgba(232,232,232,0.4)" : "rgba(232,232,232,0.08)"}`,
+                    borderRadius: 0,
+                    background: "transparent",
+                    color: isSelected ? "#E8E8E8" : "#5A5A5A",
+                  }}
                 >
                   {lbl}
                 </button>
@@ -69,11 +89,20 @@ export default function BasicInfoScreen({ onSubmit }: BasicInfoScreenProps) {
         <button
           onClick={() => canSubmit && onSubmit(parseInt(age), gender!)}
           disabled={!canSubmit}
-          className={`w-full py-4 text-sm mono tracking-[0.15em] transition-all duration-300 ease-out border
-            ${canSubmit
-              ? "border-white/20 text-white hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(0,206,209,0.1)] active:scale-[0.98]"
-              : "border-white/5 text-white/15 cursor-not-allowed"
-            }`}
+          className="w-full mono transition-all duration-300 ease-out active:scale-[0.98]"
+          style={{
+            padding: "16px 0",
+            fontSize: 14,
+            fontWeight: 300,
+            letterSpacing: "0.15em",
+            border: `1px solid ${canSubmit ? "rgba(232,232,232,0.15)" : "rgba(232,232,232,0.04)"}`,
+            borderRadius: 0,
+            background: "transparent",
+            color: canSubmit ? "#E8E8E8" : "rgba(232,232,232,0.12)",
+            cursor: canSubmit ? "pointer" : "not-allowed",
+          }}
+          onMouseEnter={(e) => { if (canSubmit) e.currentTarget.style.borderColor = "rgba(232,232,232,0.35)"; }}
+          onMouseLeave={(e) => { if (canSubmit) e.currentTarget.style.borderColor = "rgba(232,232,232,0.15)"; }}
         >
           36の問いへ
         </button>

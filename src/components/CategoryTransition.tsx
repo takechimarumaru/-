@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { CategoryId } from "@/types";
+import ParticleCanvas from "./ParticleCanvas";
 
 interface CategoryTransitionProps {
   completedCategoryId: CategoryId;
@@ -16,6 +17,24 @@ const completionMessages: Record<CategoryId, string> = {
   relation: "つながりの重さを量りました",
   work: "あなたの時間の使い方が見えました",
   environment: "すべての要素が揃いました。算出を開始します。",
+};
+
+const categoryGlowColors: Record<CategoryId, string> = {
+  body: "rgba(196,149,106,0.06)",
+  mind: "rgba(123,143,161,0.06)",
+  habit: "rgba(164,90,82,0.06)",
+  relation: "rgba(107,143,113,0.06)",
+  work: "rgba(139,129,120,0.06)",
+  environment: "rgba(122,158,159,0.06)",
+};
+
+const categoryOverlayColors: Record<CategoryId, string> = {
+  body: "#C4956A",
+  mind: "#7B8FA1",
+  habit: "#A45A52",
+  relation: "#6B8F71",
+  work: "#8B8178",
+  environment: "#7A9E9F",
 };
 
 function LoadingScramble() {
@@ -39,7 +58,10 @@ function LoadingScramble() {
   }, []);
 
   return (
-    <div className="mono tabular-nums text-4xl md:text-5xl font-bold tracking-wider text-white/40 mt-8 animate-fade-in">
+    <div
+      className="mono tabular-nums mt-8 animate-fade-in"
+      style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 300, letterSpacing: "0.02em", color: "rgba(232,232,232,0.3)" }}
+    >
       {display}
     </div>
   );
@@ -54,6 +76,8 @@ export default function CategoryTransition({
   const [showLoading, setShowLoading] = useState(false);
 
   const message = completionMessages[completedCategoryId];
+  const glowColor = categoryGlowColors[completedCategoryId];
+  const overlayColor = categoryOverlayColors[completedCategoryId];
 
   useEffect(() => {
     const t1 = setTimeout(() => setVisible(true), 200);
@@ -70,12 +94,43 @@ export default function CategoryTransition({
   }, [isLast, onComplete]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 grid-bg">
+    <div className="min-h-screen flex items-center justify-center px-6 grid-bg relative overflow-hidden">
+      {/* Full-screen category color flash overlay */}
       <div
-        className="text-center transition-opacity duration-500 ease-out"
-        style={{ opacity: visible ? 1 : 0 }}
+        className="fixed inset-0 pointer-events-none animate-category-flash"
+        style={{ background: overlayColor, zIndex: 3 }}
+      />
+
+      <ParticleCanvas />
+
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${glowColor}, transparent 70%)`,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        className="text-center relative"
+        style={{ opacity: visible ? 1 : 0, transition: "opacity 500ms ease-out", zIndex: 2 }}
       >
-        <p className="text-lg md:text-xl font-light text-white/80 tracking-wide leading-relaxed">
+        <p
+          className={visible ? "animate-fade-in" : ""}
+          style={{
+            fontSize: 24,
+            fontWeight: 200,
+            letterSpacing: "0.1em",
+            lineHeight: 2.0,
+            color: "rgba(232,232,232,0.7)",
+          }}
+        >
           {message}
         </p>
 

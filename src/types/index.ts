@@ -42,6 +42,7 @@ export interface CalculationResult {
   remainingYears: number;
   remainingSeconds: number;
   awakeSeconds: number;
+  healthyRemainingSeconds: number;
   healthySeconds: number;
   categoryScores: CategoryScore[];
   sleepHours: number;

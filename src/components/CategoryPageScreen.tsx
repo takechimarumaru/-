@@ -21,15 +21,6 @@ const gradientClass: Record<CategoryId, string> = {
   environment: "gradient-text-environment",
 };
 
-const glowClass: Record<CategoryId, string> = {
-  body: "glow-body",
-  mind: "glow-mind",
-  habit: "glow-habit",
-  relation: "glow-relation",
-  work: "glow-work",
-  environment: "glow-environment",
-};
-
 const barGradientClass: Record<CategoryId, string> = {
   body: "gradient-body",
   mind: "gradient-mind",
@@ -37,6 +28,15 @@ const barGradientClass: Record<CategoryId, string> = {
   relation: "gradient-relation",
   work: "gradient-work",
   environment: "gradient-environment",
+};
+
+const categoryFlashCSS: Record<CategoryId, string> = {
+  body: "#C4956A",
+  mind: "#7B8FA1",
+  habit: "#A45A52",
+  relation: "#6B8F71",
+  work: "#8B8178",
+  environment: "#7A9E9F",
 };
 
 export default function CategoryPageScreen({
@@ -49,6 +49,8 @@ export default function CategoryPageScreen({
   const [localAnswers, setLocalAnswers] = useState<Answers>({});
   const [sleepValue, setSleepValue] = useState<number>(7.0);
   const [fading, setFading] = useState(false);
+  const [flashVisible, setFlashVisible] = useState(false);
+  const [animatingButton, setAnimatingButton] = useState<string | null>(null);
 
   const category = categories.find((c) => c.id === categoryId)!;
   const globalProgress = ((categoryIndex) / totalCategories) * 100;
@@ -59,6 +61,9 @@ export default function CategoryPageScreen({
 
   const handleSelect = (questionId: number, value: number) => {
     setLocalAnswers((prev) => ({ ...prev, [questionId]: value }));
+    const key = `${questionId}-${value}`;
+    setAnimatingButton(key);
+    setTimeout(() => setAnimatingButton(null), 150);
   };
 
   const handleSubmit = () => {
@@ -68,6 +73,7 @@ export default function CategoryPageScreen({
     if (sleepQ) {
       finalAnswers[sleepQ.id] = sleepValue;
     }
+    setFlashVisible(true);
     setFading(true);
     setTimeout(() => onComplete(finalAnswers), 400);
   };
@@ -76,7 +82,7 @@ export default function CategoryPageScreen({
     <div className={`min-h-screen flex flex-col transition-opacity duration-400 ease-out ${fading ? "opacity-0" : "opacity-100"}`}>
       {/* Progress bar */}
       <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="h-[2px] bg-bg-surface w-full">
+        <div className="h-[2px] w-full" style={{ background: "#0D0D0D" }}>
           <div
             className={`h-full ${barGradientClass[categoryId]} transition-all duration-700 ease-out`}
             style={{ width: `${globalProgress}%` }}
@@ -84,112 +90,167 @@ export default function CategoryPageScreen({
         </div>
       </div>
 
-      <div className="flex-1 px-5 md:px-8 py-20 max-w-lg mx-auto w-full">
-        {/* Category header */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className={`text-2xl mono font-bold tracking-[0.2em] ${gradientClass[categoryId]}`}>
-              {category.label}
-            </h2>
-            <span className="label">{categoryIndex + 1} / {totalCategories}</span>
-          </div>
-          <div className={`h-[1px] ${barGradientClass[categoryId]} opacity-30`} />
-        </div>
-
-        {/* Questions */}
-        <div className="space-y-8">
-          {categoryQuestions.map((q, idx) => (
-            <div key={q.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms` }}>
-              {q.type === "sleep" ? (
-                <div className={`border border-white/8 p-5 ${glowClass[categoryId]}`}>
-                  <div className="flex items-start gap-3 mb-5">
-                    <span className="mono text-text-secondary text-xs mt-0.5">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <p className="text-[15px] font-light leading-relaxed text-white/90">
-                      {q.text}
-                    </p>
-                  </div>
-
-                  <div className="text-center mb-4">
-                    <span className="mono tabular-nums text-3xl font-bold text-white tracking-wider">
-                      {sleepValue.toFixed(1)}
-                    </span>
-                    <span className="label ml-2">HOURS</span>
-                  </div>
-
-                  <input
-                    type="range"
-                    min={4}
-                    max={12}
-                    step={0.5}
-                    value={sleepValue}
-                    onChange={(e) => setSleepValue(parseFloat(e.target.value))}
-                    className="w-full mb-2"
-                  />
-
-                  <div className="flex justify-between label">
-                    <span>4.0</span>
-                    <span>12.0</span>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-start gap-3 mb-3">
-                    <span className="mono text-text-secondary text-xs mt-0.5">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <p className="text-[15px] font-light leading-relaxed text-white/90 flex-1">
-                      {q.text}
-                    </p>
-                  </div>
-
-                  <div className="flex justify-end gap-2">
-                    {[1, 2, 3, 4, 5, 6, 7].map((value) => {
-                      const selected = localAnswers[q.id] === value;
-                      return (
-                        <button
-                          key={value}
-                          onClick={() => handleSelect(q.id, value)}
-                          className="w-9 h-9 rounded-full border transition-all duration-200
-                                     flex items-center justify-center shrink-0"
-                          style={{
-                            borderColor: selected ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.12)",
-                            backgroundColor: selected ? "rgba(255,255,255,0.9)" : "transparent",
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-
-                  {idx === 0 && (
-                    <div className="flex justify-end mt-1">
-                      <div className="flex gap-2 w-[calc(7*2.25rem+6*0.5rem)]">
-                        <span className="text-[9px] text-text-secondary tracking-wide">いいえ</span>
-                        <span className="flex-1" />
-                        <span className="text-[9px] text-text-secondary tracking-wide">はい</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Submit */}
-        <div className="mt-12 text-center">
-          <button
-            onClick={handleSubmit}
-            disabled={!allAnswered}
-            className={`px-10 py-3.5 text-sm mono tracking-[0.15em] transition-all duration-300 ease-out border
-              ${allAnswered
-                ? `border-white/20 text-white hover:border-white/40 ${glowClass[categoryId]} active:scale-[0.98]`
-                : "border-white/5 text-white/15 cursor-not-allowed"
-              }`}
+      {/* Flash overlay + subliminal logo */}
+      {flashVisible && (
+        <>
+          <div
+            className="fixed inset-0 z-40 pointer-events-none"
+            style={{ background: categoryFlashCSS[categoryId], animation: "flashOverlay 150ms ease-out forwards" }}
+          />
+          <div
+            className="fixed inset-0 z-[41] pointer-events-none flex items-center justify-center"
+            style={{ animation: "subliminalFlash 150ms ease-out forwards" }}
           >
-            次へ進む
-          </button>
+            <img
+              src="/logo.png"
+              alt=""
+              style={{ width: 200, opacity: 0.3, filter: "invert(1)" }}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Centered content */}
+      <div className="flex-1 flex items-center justify-center px-5 md:px-8 py-20">
+        <div className="w-full" style={{ maxWidth: "600px" }}>
+          {/* Category header */}
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-2">
+              <h2
+                className={`mono ${gradientClass[categoryId]}`}
+                style={{ fontSize: 24, fontWeight: 300, letterSpacing: "0.2em" }}
+              >
+                {category.label}
+              </h2>
+              <span className="label">{categoryIndex + 1} / {totalCategories}</span>
+            </div>
+            <div className={`h-[1px] ${barGradientClass[categoryId]} opacity-20`} />
+          </div>
+
+          {/* Questions — per DESIGN.md: 18px, weight 300, letter-spacing 0.05em, line-height 2.0 */}
+          <div className="space-y-8">
+            {categoryQuestions.map((q, idx) => (
+              <div key={q.id} className="animate-fade-in-up" style={{ animationDelay: `${idx * 80}ms` }}>
+                {q.type === "sleep" ? (
+                  <div style={{ border: "1px solid rgba(232,232,232,0.06)", borderRadius: 0, padding: 20 }}>
+                    <div className="flex items-start gap-3 mb-5">
+                      <span className="mono mt-0.5" style={{ fontSize: 12, color: "#5A5A5A" }}>
+                        {String(idx + 1).padStart(2, "0")}
+                      </span>
+                      <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 2.0, letterSpacing: "0.05em", color: "rgba(232,232,232,0.85)" }}>
+                        {q.text}
+                      </p>
+                    </div>
+
+                    <div className="text-center mb-4">
+                      <span
+                        className="mono tabular-nums"
+                        style={{ fontSize: 30, fontWeight: 300, color: "#F5F5F5", letterSpacing: "0.02em" }}
+                      >
+                        {sleepValue.toFixed(1)}
+                      </span>
+                      <span className="label ml-2">HOURS</span>
+                    </div>
+
+                    <input
+                      type="range"
+                      min={4}
+                      max={12}
+                      step={0.5}
+                      value={sleepValue}
+                      onChange={(e) => setSleepValue(parseFloat(e.target.value))}
+                      className="w-full mb-2"
+                    />
+
+                    <div className="flex justify-between label">
+                      <span>4.0</span>
+                      <span>12.0</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-start gap-3 mb-3">
+                      <span className="mono mt-0.5" style={{ fontSize: 12, color: "#5A5A5A" }}>
+                        {String(idx + 1).padStart(2, "0")}
+                      </span>
+                      <p className="flex-1" style={{ fontSize: 15, fontWeight: 300, lineHeight: 2.0, letterSpacing: "0.05em", color: "rgba(232,232,232,0.85)" }}>
+                        {q.text}
+                      </p>
+                    </div>
+
+                    {/* Radio buttons — circle border, selected = small white dot in center, NO glow */}
+                    <div className="flex justify-end gap-2">
+                      {[1, 2, 3, 4, 5, 6, 7].map((value) => {
+                        const selected = localAnswers[q.id] === value;
+                        const btnKey = `${q.id}-${value}`;
+                        const isAnimating = animatingButton === btnKey;
+                        return (
+                          <button
+                            key={value}
+                            onClick={() => handleSelect(q.id, value)}
+                            className="flex items-center justify-center shrink-0 transition-all duration-200"
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: "50%",
+                              border: `1px solid ${selected ? "rgba(232,232,232,0.5)" : "rgba(232,232,232,0.1)"}`,
+                              background: "transparent",
+                              animation: isAnimating ? "radioPop 150ms ease-out" : "none",
+                            }}
+                          >
+                            {selected && (
+                              <div
+                                style={{
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: "50%",
+                                  background: "#E8E8E8",
+                                }}
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {idx === 0 && (
+                      <div className="flex justify-end mt-1">
+                        <div className="flex gap-2 w-[calc(7*2.25rem+6*0.5rem)]">
+                          <span style={{ fontSize: 9, color: "#5A5A5A", letterSpacing: "0.05em" }}>いいえ</span>
+                          <span className="flex-1" />
+                          <span style={{ fontSize: 9, color: "#5A5A5A", letterSpacing: "0.05em" }}>はい</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Submit */}
+          <div className="mt-12 text-center">
+            <button
+              onClick={handleSubmit}
+              disabled={!allAnswered}
+              className="mono transition-all duration-300 ease-out active:scale-[0.95]"
+              style={{
+                padding: "14px 40px",
+                fontSize: 14,
+                fontWeight: 300,
+                letterSpacing: "0.15em",
+                border: `1px solid ${allAnswered ? "rgba(232,232,232,0.15)" : "rgba(232,232,232,0.04)"}`,
+                borderRadius: 0,
+                background: "transparent",
+                color: allAnswered ? "#E8E8E8" : "rgba(232,232,232,0.12)",
+                cursor: allAnswered ? "pointer" : "not-allowed",
+              }}
+              onMouseEnter={(e) => { if (allAnswered) e.currentTarget.style.borderColor = "rgba(232,232,232,0.35)"; }}
+              onMouseLeave={(e) => { if (allAnswered) e.currentTarget.style.borderColor = "rgba(232,232,232,0.15)"; }}
+            >
+              次へ進む
+            </button>
+          </div>
         </div>
       </div>
     </div>
