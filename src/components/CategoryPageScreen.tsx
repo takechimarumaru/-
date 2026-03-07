@@ -108,12 +108,24 @@ export default function CategoryPageScreen({
         </div>
       </div>
 
-      {/* Psychedelic flash overlay */}
+      {/* Psychedelic flash overlay + subliminal logo */}
       {flashVisible && (
-        <div
-          className="fixed inset-0 z-40 pointer-events-none animate-flash"
-          style={{ background: categoryGradientCSS[categoryId] }}
-        />
+        <>
+          <div
+            className="fixed inset-0 z-40 pointer-events-none animate-flash"
+            style={{ background: categoryGradientCSS[categoryId] }}
+          />
+          <div
+            className="fixed inset-0 z-[41] pointer-events-none flex items-center justify-center"
+            style={{ animation: "subliminalFlash 200ms ease-out forwards" }}
+          >
+            <img
+              src="/logo.png"
+              alt=""
+              style={{ width: 250, opacity: 0.5, filter: "invert(1)" }}
+            />
+          </div>
+        </>
       )}
 
       {/* Centered content — horizontal & vertical */}

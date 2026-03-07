@@ -200,6 +200,13 @@ body {
   animation: flashOverlay 300ms ease-out forwards;
 }
 
+/* Subliminal logo flash — appears and disappears with the category flash */
+@keyframes subliminalFlash {
+  0% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* Custom range slider */
 input[type="range"] {
   -webkit-appearance: none;

@@ -83,12 +83,13 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
         <h1
           className="font-medium tracking-wider mb-6"
           style={{
-            fontSize: "clamp(36px, 8vw, 48px)",
+            fontSize: "clamp(32px, 7vw, 48px)",
+            whiteSpace: "nowrap",
             opacity: phase >= 2 ? 1 : 0,
             animation: phase >= 2 ? "introGlitchIn 800ms ease-out forwards" : "none",
           }}
         >
-          あなたの寿命、どれぐらい？
+          あと何秒、生きられる？
         </h1>
 
         {/* Sub copy */}

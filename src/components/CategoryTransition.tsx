@@ -62,25 +62,21 @@ export default function CategoryTransition({
 }: CategoryTransitionProps) {
   const [visible, setVisible] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
-  const [showSubliminal, setShowSubliminal] = useState(false);
 
   const message = completionMessages[completedCategoryId];
   const glowColor = categoryGlowColors[completedCategoryId];
 
   useEffect(() => {
     const t1 = setTimeout(() => setVisible(true), 200);
-    // Subliminal logo flash at the moment of appearance
-    const tSub = setTimeout(() => setShowSubliminal(true), 200);
-    const tSubOff = setTimeout(() => setShowSubliminal(false), 350); // 150ms duration
 
     if (isLast) {
       const t2 = setTimeout(() => setShowLoading(true), 1500);
       const t3 = setTimeout(onComplete, 5000);
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(tSub); clearTimeout(tSubOff); };
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     } else {
       const t2 = setTimeout(() => setVisible(false), 2000);
       const t3 = setTimeout(onComplete, 2500);
-      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(tSub); clearTimeout(tSubOff); };
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
   }, [isLast, onComplete]);
 
@@ -103,17 +99,6 @@ export default function CategoryTransition({
           zIndex: 0,
         }}
       />
-
-      {/* Subliminal logo flash */}
-      {showSubliminal && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
-          <img
-            src="/logo.png"
-            alt=""
-            style={{ width: 200, opacity: 0.4, filter: "invert(1)" }}
-          />
-        </div>
-      )}
 
       <div
         className="text-center transition-opacity duration-500 ease-out relative"
