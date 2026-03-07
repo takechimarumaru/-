@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none" stroke="#333" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Back body (large circle) -->
+  <ellipse cx="250" cy="175" rx="120" ry="110" fill="none"/>
+  <!-- Front body / head (medium circle) -->
+  <ellipse cx="130" cy="195" rx="85" ry="80" fill="none"/>
+  <!-- Left ear -->
+  <circle cx="70" cy="135" r="28" fill="none"/>
+  <!-- Right ear -->
+  <circle cx="310" cy="80" r="22" fill="none"/>
+  <!-- Right small ear -->
+  <circle cx="345" cy="95" r="14" fill="none"/>
+  <!-- Face snout area -->
+  <path d="M100 215 Q115 240 140 235 Q155 230 150 215" fill="none"/>
+  <!-- Nose dots -->
+  <circle cx="118" cy="228" r="4" fill="#333" stroke="none"/>
+  <circle cx="132" cy="232" r="4" fill="#333" stroke="none"/>
+  <circle cx="125" cy="240" r="3" fill="#333" stroke="none"/>
+  <!-- Eye -->
+  <circle cx="310" cy="150" r="7" fill="#333" stroke="none"/>
+  <!-- Front paw -->
+  <path d="M75 255 Q60 275 80 280 Q100 280 105 265" fill="none"/>
+  <!-- Back paw -->
+  <path d="M300 260 Q320 280 350 270 Q365 260 350 245" fill="none"/>
+</svg>

@@ -76,13 +76,15 @@ export function calculate(info: BasicInfo, answers: Answers): CalculationResult 
     info.gender === "female" ? 75 :
     73.5;
   const healthyRemainingYears = Math.max(0, healthyLifespan - info.age);
-  const healthySeconds = healthyRemainingYears * 365.25 * 24 * 60 * 60 * awakeRatio;
+  const healthyRemainingSeconds = healthyRemainingYears * 365.25 * 24 * 60 * 60;
+  const healthySeconds = healthyRemainingSeconds * awakeRatio;
 
   return {
     estimatedLifespan,
     remainingYears,
     remainingSeconds,
     awakeSeconds,
+    healthyRemainingSeconds,
     healthySeconds,
     categoryScores,
     sleepHours,

@@ -89,20 +89,20 @@ export default function ResultScreen({
 
   // Derived values for summary
   const remainingSec = Math.round(result.remainingSeconds);
-  const awakeSec = Math.round(result.awakeSeconds);
+  const healthyRemainingSec = Math.round(result.healthyRemainingSeconds);
   const healthySec = Math.round(result.healthySeconds);
 
-  const awakeRatio = (24 - result.sleepHours) / 24;
-  const awakeLifespan = info.age + result.remainingYears * awakeRatio;
   const healthyLifespan =
     info.gender === "male" ? 72 :
     info.gender === "female" ? 75 :
     73.5;
+  const awakeRatio = (24 - result.sleepHours) / 24;
+  const sleepExcludedAge = info.age + (Math.max(0, healthyLifespan - info.age)) * awakeRatio;
 
   const summaryRows = [
     { label: "推定寿命", age: result.estimatedLifespan, seconds: remainingSec, step: 1 },
-    { label: "睡眠除外後", age: awakeLifespan, seconds: awakeSec, step: 2 },
-    { label: "健康寿命ベース", age: healthyLifespan, seconds: healthySec, step: 3 },
+    { label: "健康寿命ベース", age: healthyLifespan, seconds: healthyRemainingSec, step: 2 },
+    { label: "睡眠除外後", age: sleepExcludedAge, seconds: healthySec, step: 3 },
   ];
 
   // Single imperative orchestration
@@ -117,30 +117,30 @@ export default function ResultScreen({
       setTopLabel(`推定寿命: ${result.estimatedLifespan.toFixed(1)}歳`);
       startCountdown();
 
-      // After 5s → STEP 2: sleep reduction
+      // After 5s → STEP 2: healthy lifespan reduction
       addTimer(() => {
         stopCountdown();
         setIsReducing(true);
         setCurrentStep(2);
-        setTopLabel(`睡眠時間 ${result.sleepHours.toFixed(1)}時間/日 を除外`);
+        setTopLabel("健康に動ける時間は、もっと短い");
         setBottomLabel("");
 
-        animateToValue(awakeSec, 3000, () => {
+        animateToValue(healthyRemainingSec, 3000, () => {
           setIsReducing(false);
-          setBottomLabel("起きている時間のみ");
+          setBottomLabel(`健康寿命ベース ${healthyLifespan.toFixed(0)}歳`);
           startCountdown();
 
-          // After 5s → STEP 3: healthy lifespan reduction
+          // After 5s → STEP 3: sleep exclusion
           addTimer(() => {
             stopCountdown();
             setIsReducing(true);
             setCurrentStep(3);
-            setTopLabel("健康寿命ベースに切替");
+            setTopLabel(`あなたは毎日${result.sleepHours.toFixed(1)}時間眠っている`);
             setBottomLabel("");
 
             animateToValue(healthySec, 3000, () => {
               setIsReducing(false);
-              setBottomLabel("健康寿命 × 起きている時間");
+              setBottomLabel("起きている時間のみ");
               startCountdown();
 
               // After 3s → show summary
@@ -277,6 +277,16 @@ export default function ResultScreen({
           </div>
         )}
       </div>
+
+      {/* Logo */}
+      <img
+        src="/logo.svg"
+        alt=""
+        className="fixed bottom-4 right-4 w-[60px] transition-opacity duration-500"
+        style={{ opacity: 0.15, filter: "brightness(0) invert(0.2)" }}
+        onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.4"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.15"; }}
+      />
     </div>
   );
 }
