@@ -15,7 +15,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 500);   // rings start
-    const t2 = setTimeout(() => setPhase(2), 1500);  // title glitch in
+    const t2 = setTimeout(() => setPhase(2), 1500);  // title
     const t3 = setTimeout(() => setPhase(3), 2500);  // sub copy
     const t4 = setTimeout(() => setPhase(4), 3500);  // button
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
@@ -24,7 +24,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight / 2;
-    const dx = (e.clientX - cx) / cx; // -1 to 1
+    const dx = (e.clientX - cx) / cx;
     const dy = (e.clientY - cy) / cy;
     setMouseOffset({ x: dx * 5, y: dy * 5 });
   }, []);
@@ -32,7 +32,7 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden bg-bg-base"
+      className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
       onMouseMove={handleMouseMove}
     >
       {/* Perspective grid with parallax */}
@@ -79,14 +79,17 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
           transition: "transform 0.3s ease-out",
         }}
       >
-        {/* Main copy */}
+        {/* Main copy — per DESIGN.md: 42px, weight 300, letter-spacing 0.08em */}
         <h1
-          className="font-medium tracking-wider mb-6"
           style={{
-            fontSize: "clamp(32px, 7vw, 48px)",
+            fontSize: 42,
+            fontWeight: 300,
+            letterSpacing: "0.08em",
             whiteSpace: "nowrap",
+            color: "#E8E8E8",
+            marginBottom: 24,
             opacity: phase >= 2 ? 1 : 0,
-            animation: phase >= 2 ? "introGlitchIn 800ms ease-out forwards" : "none",
+            animation: phase >= 2 ? "introTitleIn 800ms ease-out forwards" : "none",
           }}
         >
           あと何秒、生きられる？
@@ -94,10 +97,12 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
 
         {/* Sub copy */}
         <p
-          className="text-base font-light tracking-wide leading-relaxed"
           style={{
-            color: "#666",
+            color: "#5A5A5A",
             fontSize: 16,
+            fontWeight: 300,
+            letterSpacing: "0.05em",
+            lineHeight: 2.0,
             opacity: phase >= 3 ? 1 : 0,
             animation: phase >= 3 ? "fadeIn 800ms ease-out forwards" : "none",
           }}
@@ -105,20 +110,29 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
           36の問いから、あなたの残り時間を算出する
         </p>
 
-        {/* Button */}
+        {/* Button — no border-radius, border only, transparent bg */}
         <div
-          className="mt-20"
           style={{
+            marginTop: 80,
             opacity: phase >= 4 ? 1 : 0,
             animation: phase >= 4 ? "fadeInUp 600ms ease-out forwards" : "none",
           }}
         >
           <button
             onClick={onStart}
-            className="px-10 py-4 border border-white/20 text-white text-sm mono tracking-[0.15em]
-                       transition-all duration-300 ease-out relative overflow-hidden
-                       hover:border-cyan-500/40 hover:shadow-[0_0_20px_rgba(0,206,209,0.1)]
-                       active:scale-[0.98]"
+            className="mono transition-all duration-300 ease-out active:scale-[0.98]"
+            style={{
+              padding: "16px 40px",
+              border: "1px solid rgba(232,232,232,0.15)",
+              borderRadius: 0,
+              background: "transparent",
+              color: "#E8E8E8",
+              fontSize: 14,
+              fontWeight: 300,
+              letterSpacing: "0.15em",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.35)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.15)"; }}
           >
             測定を開始する
           </button>

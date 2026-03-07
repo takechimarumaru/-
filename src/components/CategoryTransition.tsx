@@ -20,12 +20,12 @@ const completionMessages: Record<CategoryId, string> = {
 };
 
 const categoryGlowColors: Record<CategoryId, string> = {
-  body: "rgba(0,206,209,0.1)",
-  mind: "rgba(155,89,182,0.1)",
-  habit: "rgba(255,107,53,0.1)",
-  relation: "rgba(0,229,160,0.1)",
-  work: "rgba(74,144,217,0.1)",
-  environment: "rgba(231,76,158,0.1)",
+  body: "rgba(196,149,106,0.06)",
+  mind: "rgba(123,143,161,0.06)",
+  habit: "rgba(164,90,82,0.06)",
+  relation: "rgba(107,143,113,0.06)",
+  work: "rgba(139,129,120,0.06)",
+  environment: "rgba(122,158,159,0.06)",
 };
 
 function LoadingScramble() {
@@ -49,7 +49,10 @@ function LoadingScramble() {
   }, []);
 
   return (
-    <div className="mono tabular-nums text-4xl md:text-5xl font-bold tracking-wider text-white/40 mt-8 animate-fade-in">
+    <div
+      className="mono tabular-nums mt-8 animate-fade-in"
+      style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 300, letterSpacing: "0.02em", color: "rgba(232,232,232,0.3)" }}
+    >
       {display}
     </div>
   );
@@ -82,10 +85,8 @@ export default function CategoryTransition({
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 grid-bg relative overflow-hidden">
-      {/* Particle background */}
       <ParticleCanvas />
 
-      {/* Category color glow */}
       <div
         className="absolute pointer-events-none"
         style={{
@@ -104,7 +105,16 @@ export default function CategoryTransition({
         className="text-center transition-opacity duration-500 ease-out relative"
         style={{ opacity: visible ? 1 : 0, zIndex: 2 }}
       >
-        <p className={`text-lg md:text-xl font-light text-white/80 tracking-wide leading-relaxed ${visible ? "animate-glitch-in" : ""}`}>
+        <p
+          className={visible ? "animate-fade-in" : ""}
+          style={{
+            fontSize: 24,
+            fontWeight: 200,
+            letterSpacing: "0.1em",
+            lineHeight: 2.0,
+            color: "rgba(232,232,232,0.7)",
+          }}
+        >
           {message}
         </p>
 

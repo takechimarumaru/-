@@ -28,17 +28,17 @@ export default function ParticleCanvas() {
     canvas.height = h;
 
     const isMobile = w < 768;
-    const count = isMobile ? 30 : 60;
+    const count = isMobile ? 12 : 20;
 
     const particles: Particle[] = [];
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: 1 + Math.random(),
-        opacity: 0.1 + Math.random() * 0.2,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: 0.8 + Math.random() * 0.8,
+        opacity: 0.06 + Math.random() * 0.12,
       });
     }
 

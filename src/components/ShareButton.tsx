@@ -43,10 +43,20 @@ export default function ShareButton({ seconds, result }: ShareButtonProps) {
   return (
     <button
       onClick={handleShare}
-      className="px-10 py-4 border border-white/20 text-white text-sm mono tracking-[0.15em]
-                 transition-all duration-300 ease-out
-                 hover:bg-white hover:text-black
-                 active:scale-[0.98]"
+      className="mono transition-all duration-300 ease-out active:scale-[0.98]"
+      style={{
+        padding: "16px 40px",
+        border: "1px solid rgba(232,232,232,0.15)",
+        borderRadius: 0,
+        background: "transparent",
+        color: "#E8E8E8",
+        fontSize: 14,
+        fontWeight: 300,
+        letterSpacing: "0.15em",
+        cursor: "pointer",
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.35)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(232,232,232,0.15)"; }}
     >
       結果をシェアする
     </button>

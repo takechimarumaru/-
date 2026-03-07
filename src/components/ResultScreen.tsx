@@ -24,12 +24,9 @@ export default function ResultScreen({
   const [enterVisible, setEnterVisible] = useState(false);
   const [entering, setEntering] = useState(true);
 
-  // Step info text
   const [topLabel, setTopLabel] = useState("");
   const [bottomLabel, setBottomLabel] = useState("");
-  // Track which step we're on for the summary highlight
   const [currentStep, setCurrentStep] = useState(0);
-  // Show summary rows after STEP 3 complete
   const [showSummary, setShowSummary] = useState(false);
 
   const displayRef = useRef(0);
@@ -89,7 +86,6 @@ export default function ResultScreen({
     return id;
   }, []);
 
-  // Derived values for summary
   const remainingSec = Math.round(result.remainingSeconds);
   const healthyRemainingSec = Math.round(result.healthyRemainingSeconds);
   const healthySec = Math.round(result.healthySeconds);
@@ -107,9 +103,7 @@ export default function ResultScreen({
     { label: "睡眠除外後", age: sleepExcludedAge, seconds: healthySec, step: 3 },
   ];
 
-  // Single imperative orchestration
   useEffect(() => {
-    // 1s dark → show counter with step1
     addTimer(() => {
       setEntering(false);
       setEnterVisible(true);
@@ -119,7 +113,6 @@ export default function ResultScreen({
       setTopLabel(`推定寿命: ${result.estimatedLifespan.toFixed(1)}歳`);
       startCountdown();
 
-      // After 5s → STEP 2: healthy lifespan reduction
       addTimer(() => {
         stopCountdown();
         setIsReducing(true);
@@ -132,7 +125,6 @@ export default function ResultScreen({
           setBottomLabel(`健康寿命ベース ${healthyLifespan.toFixed(0)}歳`);
           startCountdown();
 
-          // After 5s → STEP 3: sleep exclusion
           addTimer(() => {
             stopCountdown();
             setIsReducing(true);
@@ -145,13 +137,11 @@ export default function ResultScreen({
               setBottomLabel("起きている時間のみ");
               startCountdown();
 
-              // After 3s → show summary
               addTimer(() => {
                 setTopLabel("");
                 setBottomLabel("");
                 setShowSummary(true);
 
-                // 8s silence then show actions
                 addTimer(() => {
                   setShowActions(true);
                 }, 8000);
@@ -173,8 +163,8 @@ export default function ResultScreen({
   const ymd = secondsToYMD(displaySeconds);
 
   return (
-    <div className="min-h-screen bg-bg-base relative overflow-hidden">
-      {entering && <div className="fixed inset-0 bg-bg-base z-50" />}
+    <div className="min-h-screen relative overflow-hidden">
+      {entering && <div className="fixed inset-0 z-50" style={{ background: "#080808" }} />}
 
       {/* Animated perspective grid */}
       <div className="perspective-grid">
@@ -193,42 +183,52 @@ export default function ResultScreen({
       >
         <div className="min-h-screen flex flex-col items-center justify-center px-6">
           <div className="text-center">
-            {/* "あなたの残り時間は…" intro text */}
             {enterVisible && (
-              <p className="text-xl font-light mb-6 animate-fade-in" style={{ color: "#999", fontSize: 20 }}>
+              <p
+                className="mb-6 animate-fade-in"
+                style={{ fontSize: 20, fontWeight: 300, color: "#5A5A5A", letterSpacing: "0.05em" }}
+              >
                 あなたの残り時間は…
               </p>
             )}
 
-            {/* Top label — reason text */}
+            {/* Top label */}
             <div className="h-8 flex items-center justify-center mb-4">
               {topLabel && (
-                <p key={topLabel} className="text-sm font-light text-text-secondary animate-fade-in tracking-wide">
+                <p key={topLabel} className="animate-fade-in" style={{ fontSize: 14, fontWeight: 300, color: "#5A5A5A", letterSpacing: "0.05em" }}>
                   {topLabel}
                 </p>
               )}
             </div>
 
-            {/* Main seconds counter — largest element */}
+            {/* Main seconds counter — per DESIGN.md: 120px, weight 300, letter-spacing 0.02em */}
             <div className="mb-2">
               <span
-                className="mono tabular-nums tracking-wider transition-colors duration-500 block"
+                className="mono tabular-nums transition-colors duration-500 block"
                 style={{
                   fontSize: "clamp(64px, 15vw, 120px)",
-                  fontWeight: 200,
+                  fontWeight: 300,
                   lineHeight: 1.1,
-                  color: isReducing ? "#FF3333" : "#FFFFFF",
+                  letterSpacing: "0.02em",
+                  color: isReducing ? "#D4443B" : "#F5F5F5",
                 }}
               >
                 {formatSeconds(displaySeconds)}
               </span>
             </div>
 
-            {/* SECONDS label */}
             <p className="label mb-3">SECONDS</p>
 
             {/* Supplementary YMD */}
-            <p className="text-white/60 text-2xl font-light tracking-wide mb-4" style={{ fontSize: "clamp(16px, 3vw, 24px)" }}>
+            <p
+              style={{
+                color: "rgba(232,232,232,0.5)",
+                fontSize: "clamp(16px, 3vw, 24px)",
+                fontWeight: 300,
+                letterSpacing: "0.05em",
+                marginBottom: 16,
+              }}
+            >
               残り{" "}
               <span className="mono tabular-nums">{ymd.years}</span>年{" "}
               <span className="mono tabular-nums">{ymd.months}</span>ヶ月{" "}
@@ -242,7 +242,7 @@ export default function ResultScreen({
               )}
             </div>
 
-            {/* Summary rows — after STEP 3 */}
+            {/* Summary rows */}
             {showSummary && (
               <div className="mt-10 animate-fade-in">
                 <div className="inline-block text-left">
@@ -253,8 +253,9 @@ export default function ResultScreen({
                         key={row.step}
                         className="flex items-baseline gap-4 mb-1.5"
                         style={{
-                          color: isActive ? "#FFFFFF" : "#666666",
-                          fontSize: "12px",
+                          color: isActive ? "#E8E8E8" : "#5A5A5A",
+                          fontSize: 12,
+                          fontWeight: 300,
                         }}
                       >
                         <span className="mono w-28 shrink-0">{row.label}</span>
@@ -269,7 +270,7 @@ export default function ResultScreen({
             )}
           </div>
 
-          {/* Actions — centered below counter */}
+          {/* Actions */}
           {showActions && (
             <div className="w-full animate-fade-in" style={{ marginTop: 100 }}>
               <div className="flex flex-col items-center gap-8">
@@ -277,13 +278,15 @@ export default function ResultScreen({
 
                 <button
                   onClick={onRestart}
-                  className="text-xs text-text-secondary tracking-wider mono
-                             hover:text-white transition-colors duration-200"
+                  className="mono transition-colors duration-200"
+                  style={{ fontSize: 12, color: "#5A5A5A", letterSpacing: "0.05em", background: "none", border: "none", cursor: "pointer" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "#E8E8E8"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#5A5A5A"; }}
                 >
                   もう一度測定する
                 </button>
 
-                <p className="text-[10px] text-text-secondary/40 text-center leading-relaxed mt-6">
+                <p style={{ fontSize: 10, color: "#3A3A3A", textAlign: "center", lineHeight: 1.8, marginTop: 24 }}>
                   この結果は統計データに基づく推定であり、
                   <br />
                   医学的な正確性を保証するものではありません。
@@ -294,20 +297,19 @@ export default function ResultScreen({
         </div>
       </div>
 
-      {/* Logo — bottom right */}
+      {/* Logo — bottom right per spec */}
       <div
         className="fixed flex flex-col items-center gap-1 transition-opacity duration-500 cursor-default"
-        style={{ bottom: 30, right: 30, opacity: 0.6, zIndex: 50 }}
-        onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.6"; }}
+        style={{ bottom: 40, right: 40, opacity: 0.4, zIndex: 50 }}
+        onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.8"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.4"; }}
       >
         <img
           src="/logo.png"
-          alt=""
-          className="w-[120px]"
-          style={{ filter: "invert(1) brightness(2)" }}
+          alt="こす.くま"
+          style={{ width: 100, filter: "invert(1) brightness(1.8)" }}
         />
-        <span style={{ fontSize: 10, color: "#666", letterSpacing: "0.1em" }}>
+        <span style={{ fontSize: 8, color: "#3A3A3A", letterSpacing: "0.1em" }}>
           こす.くま
         </span>
       </div>
