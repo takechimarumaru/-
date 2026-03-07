@@ -83,12 +83,12 @@ export default function IntroScreen({ onStart }: IntroScreenProps) {
         {/* Main copy — per DESIGN.md: 42px, weight 300, letter-spacing 0.08em */}
         <h1
           style={{
-            fontSize: 42,
+            fontSize: "clamp(26px, 7vw, 42px)",
             fontWeight: 300,
-            letterSpacing: "0.08em",
-            whiteSpace: "nowrap",
+            letterSpacing: "0.05em",
             color: "#E8E8E8",
             marginBottom: 24,
+            lineHeight: 1.4,
             opacity: phase >= 2 ? 1 : 0,
             animation: phase >= 2 ? "introGlitchIn 800ms ease-out forwards" : "none",
           }}

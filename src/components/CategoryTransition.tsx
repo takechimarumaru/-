@@ -124,11 +124,12 @@ export default function CategoryTransition({
         <p
           className={visible ? "animate-fade-in" : ""}
           style={{
-            fontSize: 24,
+            fontSize: "clamp(18px, 4vw, 24px)",
             fontWeight: 200,
             letterSpacing: "0.1em",
             lineHeight: 2.0,
             color: "rgba(232,232,232,0.7)",
+            padding: "0 20px",
           }}
         >
           {message}
