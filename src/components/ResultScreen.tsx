@@ -264,7 +264,7 @@ export default function ResultScreen({
 
           {/* Actions — centered below counter */}
           {showActions && (
-            <div className="mt-16 w-full animate-fade-in">
+            <div className="mt-20 w-full animate-fade-in" style={{ marginTop: 80 }}>
               <div className="flex flex-col items-center gap-8">
                 <ShareButton seconds={displaySeconds} result={result} />
 
@@ -295,7 +295,7 @@ export default function ResultScreen({
         onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.6"; }}
       >
         <img
-          src="/logo.svg"
+          src="/logo.png"
           alt=""
           className="w-[120px]"
           style={{ filter: "invert(1)" }}
